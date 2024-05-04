@@ -37,6 +37,8 @@ Usage of /tmp/go-build1711827394/b001/exe/main:
   * Integration test
   * Linting?
   * Formatting
+  * Coverage
+  * Go generate for fakes
 * Supplementary Features
   * apt-get update before first download
   * Download cache

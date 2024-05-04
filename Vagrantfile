@@ -85,7 +85,7 @@ Vagrant.configure("2") do |config|
       # Ginkgo needs to be installed for the ginkgo extension to work
       export TEMP_GO="/home/vagrant/.local/share/mise/installs/go/1.20/bin/"
       ${TEMP_GO}go install github.com/onsi/ginkgo/v2/ginkgo@v2.12.0
-      ${TEMP_GO}go install github.com/maxbrunsfeld/counterfeiter/v6@latest
+      ${TEMP_GO}go install github.com/maxbrunsfeld/counterfeiter/v6@v6.7.0
 #       ls -l /home/vagrant/go/bin/
 #       whoami
     SHELL
