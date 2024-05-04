@@ -1,0 +1,12 @@
+@startuml
+digraph test {
+
+        "jq" -> "libjq1"
+        "jq" -> "libc6"
+        "libjq1" -> "libc6"
+        "libjq1" -> "libonig5"
+        "libonig5" -> "libc6"
+
+}
+
+@enduml

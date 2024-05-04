@@ -1,0 +1,24 @@
+ new Debian package, version 2.0.
+ size 141948 bytes: control archive=2812 bytes.
+     531 bytes,    17 lines      control              
+     220 bytes,     3 lines      md5sums              
+      30 bytes,     1 lines      shlibs               
+   11538 bytes,   314 lines      symbols              
+      74 bytes,     2 lines      triggers             
+ Package: libonig5
+ Source: libonig
+ Version: 6.9.4-1
+ Architecture: amd64
+ Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+ Original-Maintainer: Jörg Frings-Fürst <debian@jff.email>
+ Installed-Size: 598
+ Depends: libc6 (>= 2.14)
+ Section: libs
+ Priority: optional
+ Multi-Arch: same
+ Homepage: https://github.com/kkos/oniguruma
+ Description: regular expressions library
+  Oniguruma is a library for working with regular expressions.
+  .
+  Different character encoding for every regular expression object can
+  be specified.

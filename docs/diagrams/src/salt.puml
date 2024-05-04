@@ -1,0 +1,8 @@
+@startuml
+digraph salt {
+
+    "salt-master" -> "salt-common"
+    "salt-minon" -> "salt-common"
+    
+}
+@enduml

@@ -1,0 +1,27 @@
+ new Debian package, version 2.0.
+ size 30588 bytes: control archive=1060 bytes.
+    1090 bytes,    23 lines      control              
+     393 bytes,     6 lines      md5sums              
+ Package: aglfn
+ Version: 1.7+git20191031.4036a9c-2
+ Architecture: all
+ Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+ Original-Maintainer: Debian Fonts Task Force <pkg-fonts-devel@lists.alioth.debian.org>
+ Installed-Size: 123
+ Section: fonts
+ Priority: optional
+ Multi-Arch: foreign
+ Homepage: https://github.com/adobe-type-tools/agl-aglfn
+ Description: Adobe Glyph List For New Fonts
+  AGL (Adobe Glyph List) maps glyph names to Unicode values for the
+  purpose of deriving content. AGLFN (Adobe Glyph List For New Fonts) is a
+  subset of AGL that excludes the glyph names associated with the PUA
+  (Private Use Area), and is meant to specify preferred glyph names for
+  new fonts. Also included is the ITC Zapf Dingbats Glyph List, which is
+  similar to AGL in that it maps glyph names to Unicode values for the
+  purpose of deriving content, but only for the glyphs in the ITC Zapf
+  Dingbats font.
+  .
+  Be sure to visit the AGL Specification and Developer Documentation pages
+  for detailed information about naming glyphs, interpreting glyph names,
+  and developing OpenType fonts.

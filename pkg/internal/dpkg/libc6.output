@@ -1,0 +1,35 @@
+ new Debian package, version 2.0.
+ size 2722900 bytes: control archive=55624 bytes.
+      40 bytes,     1 lines      conffiles            
+    1144 bytes,    23 lines      control              
+   21681 bytes,   285 lines      md5sums              
+    7153 bytes,   199 lines   *  postinst             #!/bin/sh
+    1068 bytes,    37 lines   *  postrm               #!/bin/sh
+   20085 bytes,   520 lines   *  preinst              #!/bin/sh
+     956 bytes,    30 lines      shlibs               
+  137041 bytes,  4440 lines      symbols              
+   84507 bytes,   654 lines      templates            
+      73 bytes,     2 lines      triggers             
+ Package: libc6
+ Source: glibc
+ Version: 2.31-0ubuntu9.15
+ Architecture: amd64
+ Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+ Installed-Size: 13239
+ Depends: libgcc-s1, libcrypt1 (>= 1:4.4.10-10ubuntu4)
+ Recommends: libidn2-0 (>= 2.0.5~)
+ Suggests: glibc-doc, debconf | debconf-2.0, locales
+ Conflicts: openrc (<< 0.27-2~)
+ Breaks: hurd (<< 1:0.9.git20170910-1), iraf-fitsutil (<< 2018.07.06-4), libtirpc1 (<< 0.2.3), locales (<< 2.31), locales-all (<< 2.31), nocache (<< 1.1-1~), nscd (<< 2.31), r-cran-later (<< 0.7.5+dfsg-2), wcc (<< 0.0.2+dfsg-3)
+ Replaces: libc6-amd64
+ Section: libs
+ Priority: optional
+ Multi-Arch: same
+ Homepage: https://www.gnu.org/software/libc/libc.html
+ Description: GNU C Library: Shared libraries
+  Contains the standard libraries that are used by nearly all programs on
+  the system. This package includes shared versions of the standard C library
+  and the standard math library, as well as many others.
+ Original-Maintainer: GNU Libc Maintainers <debian-glibc@lists.debian.org>
+ Original-Vcs-Browser: https://salsa.debian.org/glibc-team/glibc
+ Original-Vcs-Git: https://salsa.debian.org/glibc-team/glibc.git
