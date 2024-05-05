@@ -1,0 +1,5 @@
+{{.Name}}:
+  pkg.installed:
+    - refresh: False
+    - sources:
+      - {{.Name}}: "salt://{{.Filepath}}"

@@ -1,0 +1,10 @@
+{{.Name}}:
+  pkg.installed:
+  {% if salt['grains.get']('offline', False) == True %}
+    - sources:
+      - {{.Name}}: "salt://{{.Filepath}}"
+    - refresh: False
+  {% else %}
+    - pkgs:
+      - {{.Name}}: "{{.Version}}"
+  {% endif %}

@@ -55,4 +55,6 @@ go build  -o build/main main.go
   * Hide already installed packages - useful if you only need to know the dependencies that still need to be installed on a system
   * Salt output
     * Salt output tests
+    * Important to remember here that only **offline** installers require dependencies
+    * Online installer is only required for the **first** dependency, apt-get does everything else
   * Puppet output

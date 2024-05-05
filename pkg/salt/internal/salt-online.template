@@ -1,0 +1,4 @@
+{{.Name}}:
+  pkg.installed:
+    - pkgs:
+    - {{.Name}}: "{{.Version}}"
