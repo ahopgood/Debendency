@@ -23,6 +23,7 @@ Usage of /tmp/go-build1711827394/b001/exe/main:
 * Test command line flags
 * Add testing command line flags to only run if on linux - integration tests
 * Add integration tests
+  * Move linux command non-mocked tests into the integrationtests package 
 * Logging
   * Add standard out logger
   * Add standard error logger
