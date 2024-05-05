@@ -13,11 +13,17 @@ Usage of /tmp/go-build1711827394/b001/exe/main:
   -s    output dependencies as salt code
 
 ```
+## Building
+```
+go build  -o build/main main.go
+```
 
 ## To-Do 
 * Bug fixes
   * Support case where file already has been downloaded and we don't create a model as we cannot parse the parameters from the download output
-    * dpkg -I might be needed to list these details if the download doesn't happen
+    * dpkg -I might be needed to list these details if the download doesn't happen - don't know what the file name is
+    * apt download will grab the latest available version
+    * Perhaps we can use apt list to build a list of the latest version we do have if the download fails?
 * Create command line flags
   * Mandatory vs Optional, can we support these
 * Test command line flags
