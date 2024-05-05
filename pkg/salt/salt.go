@@ -20,6 +20,10 @@ func ToSaltDefinition(model *pkg.PackageModel) {
     - sources:
       - {{.Name}}: "salt://{{.Filepath}}"
     - refresh: False
+      {{- if .Dependencies}}
+    - require:
+      {{end}}
+      {{- range .Dependencies}}- pkg: {{.Name}}{{end}}
   {% else %}
     - pkgs:
       - {{.Name}}: "{{.Version}}"
