@@ -30,6 +30,10 @@ func GenerateDiagram(config *pkg.Config, modelMap map[string]*pkg.PackageModel) 
 	return puml
 }
 
+type UmlDiagram interface {
+	Contents() string
+}
+
 type Uml struct {
 	start   string
 	diagram UmlDiagram
@@ -46,10 +50,6 @@ func NewUml(umlDiagram UmlDiagram) Uml {
 
 func (uml Uml) Contents() string {
 	return uml.start + uml.diagram.Contents() + uml.end
-}
-
-type UmlDiagram interface {
-	Contents() string
 }
 
 type Digraph struct {

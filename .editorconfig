@@ -2,3 +2,6 @@ root = true
 [Makefile]
 end_of_line = lf
 indent_style = tab
+
+[*.puml]
+end_of_line = lf

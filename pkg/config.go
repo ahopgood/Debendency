@@ -25,7 +25,7 @@ func ParseFlags(programName string, args []string) (config *Config, output strin
 	flags.BoolVar(&conf.GenerateSalt, "s", false, "output dependencies as salt code")
 	flags.BoolVar(&conf.GenerateDiagram, "d", false, "output dependencies as a diagram")
 	flags.StringVar(&conf.InstallerLocation, "o", "~/.debendency/cache", "cache directory to save installer files to")
-	flags.BoolVar(&conf.ExcludeInstalledPackages, "e", true, "exclude already installed packages from output")
+	flags.BoolVar(&conf.ExcludeInstalledPackages, "e", false, "exclude already installed packages from output")
 
 	err = flags.Parse(args)
 	if err != nil {

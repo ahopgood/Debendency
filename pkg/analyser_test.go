@@ -51,7 +51,7 @@ var _ = Describe("Analyser", func() {
 	libc6 := "Get:1 http://gb.archive.ubuntu.com/ubuntu focal-updates/main amd64 libc6 amd64 2.31-0ubuntu9.15 [2,723 kB]\nFetched 2,723 kB in 0s (20.9 MB/s)\n"
 	libc6File := "libc6_2.31-0ubuntu9.15_amd64.deb"
 
-	FWhen("BuildPackage", func() {
+	When("BuildPackage", func() {
 		When("Package does not exist", func() {
 			It("Produces nothing", func() {
 				// Fail to download the debendency
@@ -196,19 +196,19 @@ var _ = Describe("Analyser", func() {
 				By("Returning jq model", func() {
 					model := modelMap["jq"]
 					Expect(model.Name).To(Equal("jq"))
-					//Expect(model.Version).To(Equal("7.4.0-2"))
+					Expect(model.Version).To(Equal("1.6-1ubuntu0.20.04.1"))
 					Expect(model.Filepath).To(Equal(jqFile))
 				})
 				By("Returning libjq1 model", func() {
 					model := modelMap["libjq1"]
 					Expect(model.Name).To(Equal("libjq1"))
-					//Expect(model.Version).To(Equal("2.31-0ubuntu9.15"))
+					Expect(model.Version).To(Equal("1.6-1ubuntu0.20.04.1"))
 					Expect(model.Filepath).To(Equal(libjq1File))
 				})
 				By("Returning libonig5 model", func() {
 					model := modelMap["libonig5"]
 					Expect(model.Name).To(Equal("libonig5"))
-					//Expect(model.Version).To(Equal("2.31-0ubuntu9.15"))
+					Expect(model.Version).To(Equal("6.9.4-1"))
 					Expect(model.Filepath).To(Equal(libonig5File))
 				})
 
@@ -222,7 +222,7 @@ var _ = Describe("Analyser", func() {
 					model := modelMap["jq"]
 					Expect(model.Dependencies["libc6"]).To(Not(BeNil()))
 				})
-				By("Adding libc6 to the jq dependencies map", func() {
+				By("Adding libjq1 to the jq dependencies map", func() {
 					model := modelMap["libjq1"]
 					Expect(model.Dependencies["libc6"]).To(Not(BeNil()))
 				})
@@ -232,7 +232,7 @@ var _ = Describe("Analyser", func() {
 				})
 				By("Producing a puml diagram", func() {
 
-					fmt.Println(puml.GenerateDiagram(modelMap))
+					fmt.Println(puml.GenerateDiagram(&pkg.Config{}, modelMap))
 				})
 			})
 		})
