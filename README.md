@@ -13,9 +13,13 @@ Usage of /tmp/go-build1711827394/b001/exe/main:
   -s    output dependencies as salt code
 
 ```
+## Example usage
+* `debendency -p jq` fetch dependencies
+* `debendency -p jq -d` fetch dependencies and create an output diagram of the flow of dependencies
+* 
 ## Building
 ```
-go build  -o build/main main.go
+go build  -o build/debendency main.go
 ```
 ## Testing
 ```
@@ -44,6 +48,7 @@ ginkgo -r -v
     * Update puml.go to add the starting dependency to the title of the graph
     * Add puml tests
     * Add package versions to assist with comparisons between OS versions 
+    * Move to declare package and version in single place referencing just the package name in the diagram
     * Move puml diagram output to separate block to our log messages so any information about the diagram generation doesn't get mixed into the diagram itself
 * Add Makefile with goals
   * Build
