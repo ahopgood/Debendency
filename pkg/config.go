@@ -6,10 +6,11 @@ import (
 )
 
 type Config struct {
-	PackageName       string
-	GenerateSalt      bool
-	GenerateDiagram   bool
-	InstallerLocation string
+	PackageName              string
+	GenerateSalt             bool
+	GenerateDiagram          bool
+	InstallerLocation        string
+	ExcludeInstalledPackages bool
 }
 
 func ParseFlags(programName string, args []string) (config *Config, output string, err error) {
@@ -24,6 +25,7 @@ func ParseFlags(programName string, args []string) (config *Config, output strin
 	flags.BoolVar(&conf.GenerateSalt, "s", false, "output dependencies as salt code")
 	flags.BoolVar(&conf.GenerateDiagram, "d", false, "output dependencies as a diagram")
 	flags.StringVar(&conf.InstallerLocation, "o", "~/.debendency/cache", "cache directory to save installer files to")
+	flags.BoolVar(&conf.ExcludeInstalledPackages, "e", true, "exclude already installed packages from output")
 
 	err = flags.Parse(args)
 	if err != nil {

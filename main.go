@@ -3,6 +3,7 @@ package main
 import (
 	"com/alexander/debendency/pkg"
 	"com/alexander/debendency/pkg/puml"
+	"com/alexander/debendency/pkg/salt"
 	"flag"
 	"os"
 
@@ -29,9 +30,13 @@ func main() {
 	cache.ClearBefore()
 
 	packageModelMap := make(map[string]*pkg.PackageModel)
-	pkg.NewAnalyser().BuildPackage(conf.PackageName, packageModelMap)
+	firstPackage := pkg.NewAnalyser(conf).BuildPackage(conf.PackageName, packageModelMap)
 
 	if true == conf.GenerateDiagram {
-		fmt.Println(puml.GenerateDiagram(packageModelMap).Contents())
+		fmt.Println(puml.GenerateDiagram(conf, packageModelMap).Contents())
+	}
+
+	if true == conf.GenerateSalt {
+		salt.ToSaltDefinition(firstPackage)
 	}
 }

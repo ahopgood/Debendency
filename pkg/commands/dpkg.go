@@ -1,11 +1,18 @@
 package commands
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 // Interfaces may allow for faking when testing our native commands
 type Dpkg interface {
 	IdentifyDependencies(filename string) []string
 	ParseDependencies(output string) []string
+}
+
+type DkpgQuery interface {
+	IsInstalled(packageName string) bool
 }
 
 type Dpkger struct {
@@ -32,8 +39,6 @@ func (dpkg Dpkger) IdentifyDependencies(filename string) []string {
 
 }
 
-// Need to update to handle these bracketed versions
-// "libjq1 (= 1.6-1ubuntu0.20.04.1)", "libc6 (>= 2.4)"
 func (dpkg Dpkger) ParseDependencies(output string) []string {
 
 	//Find the line Depends:
@@ -49,4 +54,25 @@ func (dpkg Dpkger) ParseDependencies(output string) []string {
 		return dependencies
 	}
 	return make([]string, 0)
+}
+
+type Query struct {
+	Cmd Command
+}
+
+func (query Query) IsInstalled(packageName string) bool {
+	output, exitCode, err := query.Cmd.Command("dpkg-query", "-W", packageName)
+	if err != nil {
+		fmt.Printf("Encountered an unknown error on dpkg-query: %#v\n", err)
+		return false
+	}
+	switch exitCode {
+	case 0:
+		return true
+	case 1:
+		return false
+	default:
+		fmt.Printf("Encountered an unknown exit code on dpkg-query: %d, with output %s\n", exitCode, output)
+		return false
+	}
 }

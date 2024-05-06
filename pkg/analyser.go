@@ -7,22 +7,26 @@ import (
 )
 
 //go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
-//counterfeiter:generate -o internal/fake_dpkger.go com/alexander/scratch/salt/commands.Dpkg
-//counterfeiter:generate -o internal/fake_apter.go com/alexander/scratch/salt/commands.Apt
+//counterfeiter:generate -o internal/fake_dpkger.go com/alexander/debendency/pkg/commands.Dpkg
+//counterfeiter:generate -o internal/fake_apter.go com/alexander/debendency/pkg/commands.Apt
+//counterfeiter:generate -o internal/fake_query.go com/alexander/debendency/pkg/commands.DpkgQuery
 
 type PackageModel struct {
 	Filepath     string
 	Name         string
 	Version      string
 	Dependencies map[string]*PackageModel
+	IsInstalled  bool
 }
 
 type Analyser struct {
-	Apt  commands.Apt
-	Dpkg commands.Dpkg
+	Apt    commands.Apt
+	Dpkg   commands.Dpkg
+	Config *Config
+	Query  commands.DkpgQuery
 }
 
-func NewAnalyser() Analyser {
+func NewAnalyser(config *Config) Analyser {
 	command := commands.LinuxCommand{}
 	apter := commands.Apter{
 		Cmd: command,
@@ -30,9 +34,14 @@ func NewAnalyser() Analyser {
 	dpkger := commands.Dpkger{
 		Cmd: command,
 	}
+	query := commands.Query{
+		Cmd: command,
+	}
 	return Analyser{
-		Apt:  apter,
-		Dpkg: dpkger,
+		Apt:    apter,
+		Dpkg:   dpkger,
+		Config: config,
+		Query:  query,
 	}
 }
 
@@ -55,6 +64,9 @@ func (packager Analyser) BuildPackage(name string, modelMap map[string]*PackageM
 	packageModel := PackageModel{}
 	packageModel.GetPackageFilename(standardOut)
 
+	if packager.Config.ExcludeInstalledPackages {
+		packageModel.IsInstalled = packager.Query.IsInstalled(packageModel.Name)
+	}
 	// Add packageModel to map under package name
 	// packageModel.Name
 	modelMap[packageModel.Name] = &packageModel

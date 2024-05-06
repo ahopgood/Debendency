@@ -17,6 +17,11 @@ Usage of /tmp/go-build1711827394/b001/exe/main:
 ```
 go build  -o build/main main.go
 ```
+## Testing
+```
+ginkgo -r -v
+```
+* Recursive and verbose
 
 ## To-Do 
 * Bug fixes
@@ -38,6 +43,8 @@ go build  -o build/main main.go
     * Move model parsing to puml.go
     * Update puml.go to add the starting dependency to the title of the graph
     * Add puml tests
+    * Add package versions to assist with comparisons between OS versions 
+    * Move puml diagram output to separate block to our log messages so any information about the diagram generation doesn't get mixed into the diagram itself
 * Add Makefile with goals
   * Build
   * Test
@@ -52,9 +59,19 @@ go build  -o build/main main.go
     * Default location of cache `~/debendency/cache`
     * Flag to specify location for the cache
     * Flag to delete download cache after use?
-  * Hide already installed packages - useful if you only need to know the dependencies that still need to be installed on a system
+  * Hide already installed packages
+    * Useful if you only need to know the dependencies that still need to be installed on a system
+    * Add command line flag
+    * Add command to check if installed
+    * Add integration tests
+    * Add unit tests
+    * Add interface to call to ensure model has installed boolean set
   * Salt output
     * Salt output tests
     * Important to remember here that only **offline** installers require dependencies
     * Online installer is only required for the **first** dependency, apt-get does everything else
+    * This can be modelled as:
+      * Map root method
+      * Map dependencies method
+      * With an option to using the dependencies template if no root template is specified
   * Puppet output

@@ -11,6 +11,15 @@ import (
 // Offline requires dependencies
 // Next models only support offline installation
 // Requires dependencies
+
+func RootModelToTemplate(model *pkg.PackageModel, template string) {
+
+}
+
+func DependencyToTemplate(model *pkg.PackageModel, template string) {
+
+}
+
 func ToSaltDefinition(model *pkg.PackageModel) {
 
 	saltTemplate := `

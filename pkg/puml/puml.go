@@ -5,17 +5,22 @@ import (
 	"fmt"
 )
 
-func GenerateDiagram(modelMap map[string]*pkg.PackageModel) Uml {
+func GenerateDiagram(config *pkg.Config, modelMap map[string]*pkg.PackageModel) Uml {
 	dependencies := make([]Dependency, 0)
 	// Loop through the model dependencies?
 	for key, fromModel := range modelMap {
 		fmt.Printf("%s %#v\n", key, fromModel)
 		for _, toModel := range fromModel.Dependencies {
-			fmt.Printf("From %s to %s\n", fromModel.Name, toModel.Name)
-			dependencies = append(dependencies, Dependency{
-				From: fromModel.Name,
-				To:   toModel.Name,
-			})
+			if config.ExcludeInstalledPackages && (fromModel.IsInstalled || toModel.IsInstalled) {
+				//fmt.Printf()
+				//Log output separately from this model
+			} else {
+				fmt.Printf("From %s to %s\n", fromModel.Name, toModel.Name)
+				dependencies = append(dependencies, Dependency{
+					From: fromModel.Name,
+					To:   toModel.Name,
+				})
+			}
 		}
 	}
 	puml := NewUml(
