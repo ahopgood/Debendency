@@ -10,7 +10,7 @@ func GenerateDiagram(config *pkg.Config, modelMap map[string]*pkg.PackageModel) 
 	for key, fromModel := range modelMap {
 		fmt.Printf("%s %#v\n", key, fromModel)
 		for _, toModel := range fromModel.Dependencies {
-			if config.ExcludeInstalledPackages && (fromModel.IsInstalled || toModel.IsInstalled) {
+			if config.ExcludeInstalledPackages && (fromModel.IsInstalled && toModel.IsInstalled) {
 				//fmt.Printf()
 				//Log output separately from this model
 			} else {

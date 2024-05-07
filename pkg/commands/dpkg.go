@@ -41,6 +41,11 @@ func (dpkg Dpkger) IdentifyDependencies(filename string) []string {
 
 func (dpkg Dpkger) ParseDependencies(output string) []string {
 
+	//Find the line Pre-Depends:
+	_, afterPreDepends, found := strings.Cut(output, "Pre-Depends:")
+	if found {
+		output = afterPreDepends
+	}
 	//Find the line Depends:
 	_, after, found := strings.Cut(output, "Depends:")
 	if found {
@@ -48,8 +53,8 @@ func (dpkg Dpkger) ParseDependencies(output string) []string {
 		dependencies := strings.Split(depends, ",")
 		for i := range dependencies {
 			dependencies[i] = strings.TrimSpace(dependencies[i])
+			// Here we handle/ignore the optional version brackets e.g. libc6 (>= 2.4)
 			dependencies[i] = strings.Split(dependencies[i], " ")[0]
-			//dependencies[i] = strings.TrimSpace(dep)
 		}
 		return dependencies
 	}

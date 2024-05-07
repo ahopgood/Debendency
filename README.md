@@ -32,6 +32,7 @@ ginkgo -r -v
 * Bug fixes
   * Update `packageModel.GetPackageFilename` to account for versions with colons becoming `%3a` in filenames
     * version `1:4.4.10-10ubuntu4` becomes -> `libcrypt1_1%3a4.4.10-10ubuntu4_amd64.deb`
+  * ~~Support cases where `Pre-Depends` exists for `dpkger.ParseDependencies`~~ 
   * Support case where file already has been downloaded and we don't create a model as we cannot parse the parameters from the download output
     * dpkg -I might be needed to list these details if the download doesn't happen - don't know what the file name is
     * apt download will grab the latest available version
@@ -50,6 +51,7 @@ ginkgo -r -v
     * ~~Move model parsing to puml.go~~
     * Update puml.go to add the starting dependency to the title of the graph
     * Add puml tests
+    * Update diagram to include OS version in title and filename?
     * ~~Add package versions to assist with comparisons between OS versions~~ 
     * Move to declare package and version in single place referencing just the package name in the diagram
     * Move puml diagram output to separate block to our log messages so any information about the diagram generation doesn't get mixed into the diagram itself
