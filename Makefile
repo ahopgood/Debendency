@@ -1,22 +1,30 @@
+.PHONY: build
 
-build: go build main.go -o build/main
+build:
+	go build -o build/debendency main.go
 
-test: ginkgo --skip-package integrationtests -cover
+test:
+	ginkgo --skip-package integrationtests -cover
 
 # Integration tests
-int: ginkgo --skip-package pkg
+int:
+	ginkgo --skip-package pkg
 
 fmt:
 
 lint:
 
-coverage-html: coverage-clean test
+coverage-html:
+	coverage-clean test
+	go cover
 
-coverage-cli: coverage-clean test
+coverage-cli:
+	coverage-clean test
 
 coverage-clean:
 
-help: ## Show this help message.
+## Show this help message.
+help:
 	echo "usage: make [target] ..."
 	echo ""
 	echo "targets:"
