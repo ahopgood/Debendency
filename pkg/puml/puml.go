@@ -10,7 +10,8 @@ func GenerateDiagram(config *pkg.Config, modelMap map[string]*pkg.PackageModel) 
 	for key, fromModel := range modelMap {
 		fmt.Printf("%s %#v\n", key, fromModel)
 		for _, toModel := range fromModel.Dependencies {
-			if config.ExcludeInstalledPackages && (fromModel.IsInstalled && toModel.IsInstalled) {
+			//if config.ExcludeInstalledPackages && (fromModel.IsInstalled && toModel.IsInstalled) {
+			if config.ExcludeInstalledPackages && toModel.IsInstalled {
 				//fmt.Printf()
 				//Log output separately from this model
 			} else {
@@ -80,8 +81,8 @@ func (d Digraph) Contents() string {
 	fmt.Println("Building diagraph contents")
 	output := d.start + "\n"
 	for _, value := range d.dependencies {
-		output = output + "\t" + "\"" + value.From + "\n(" + value.FromVersion + ")\"" +
-			" -> " + "\"" + value.To + "\n(" + value.ToVersion + ")\"\n"
+		output = output + "\t" + "\"" + value.From + "\\n(" + value.FromVersion + ")\"" +
+			" -> " + "\"" + value.To + "\\n(" + value.ToVersion + ")\"\n"
 
 	}
 	output = output + "\n" + d.end + "\n"

@@ -1,12 +1,8 @@
 @startuml
 digraph test {
 
-        "jq
-(1.6-1ubuntu0.20.04.1)" -> "libjq1
-(1.6-1ubuntu0.20.04.1)"
-        "libjq1
-(1.6-1ubuntu0.20.04.1)" -> "libonig5
-(6.9.4-1)"
+        "jq\n(1.5+dfsg-2)" -> "libjq1\n(1.5+dfsg-2)" [label = ">= 2.7"]
+        "libjq1\n(1.5+dfsg-2)" -> "libonig4\n(6.7.0-1)"
 
 }
 

@@ -57,7 +57,7 @@ var _ = Describe("Install", func() {
 			Expect(dependencies[0]).To(Equal("bsdmainutils"))
 			Expect(dependencies[1]).To(Equal("dctrl-tools"))
 			Expect(dependencies[2]).To(Equal("salt-common"))
-			Expect(dependencies[3]).To(Equal("python3:any"))
+			Expect(dependencies[3]).To(Equal("python3"))
 		})
 	})
 
@@ -75,7 +75,7 @@ var _ = Describe("Install", func() {
 				"libqt5opengl5", "libqt5printsupport5", "libqt5widgets5", "libqt5x11extras5",
 				"libsdl1.2debian", "libssl1.1", "libstdc++6", "libvpx5", "libx11-6",
 				"libxcb1", "libxcursor1", "libxext6", "libxml2", "libxmu6", "libxt6",
-				"zlib1g", "python", "python", "python:any",
+				"zlib1g", "python", "python", "python",
 			))
 		})
 	})

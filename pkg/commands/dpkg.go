@@ -53,8 +53,16 @@ func (dpkg Dpkger) ParseDependencies(output string) []string {
 		dependencies := strings.Split(depends, ",")
 		for i := range dependencies {
 			dependencies[i] = strings.TrimSpace(dependencies[i])
+
 			// Here we handle/ignore the optional version brackets e.g. libc6 (>= 2.4)
-			dependencies[i] = strings.Split(dependencies[i], " ")[0]
+			if strings.Contains(dependencies[i], " ") {
+				dependencies[i] = strings.Split(dependencies[i], " ")[0]
+			}
+			// Here we handle/ignore the qualifier on a dependency e.g. python:any
+			if strings.Contains(dependencies[i], ":") {
+				dependencies[i] = strings.Split(dependencies[i], ":")[0]
+			}
+
 		}
 		return dependencies
 	}

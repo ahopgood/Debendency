@@ -32,7 +32,8 @@ ginkgo -r -v
 * Bug fixes
   * Update `packageModel.GetPackageFilename` to account for versions with colons becoming `%3a` in filenames
     * version `1:4.4.10-10ubuntu4` becomes -> `libcrypt1_1%3a4.4.10-10ubuntu4_amd64.deb`
-  * ~~Support cases where `Pre-Depends` exists for `dpkger.ParseDependencies`~~ 
+  * ~~Support cases where `Pre-Depends` exists for `dpkger.ParseDependencies`~~
+  * ~~Ignore case where `Depends` has a dependency (python:any)~~
   * Support case where file already has been downloaded and we don't create a model as we cannot parse the parameters from the download output
     * dpkg -I might be needed to list these details if the download doesn't happen - don't know what the file name is
     * apt download will grab the latest available version
@@ -48,14 +49,18 @@ ginkgo -r -v
   * Add standard error logger
   * Add verbose flag to set logging level to DEBUG
 * Add puml output
-    * ~~Move model parsing to puml.go~~
-    * Update puml.go to add the starting dependency to the title of the graph
-    * Add puml tests
-    * Update diagram to include OS version in title and filename?
-    * ~~Add package versions to assist with comparisons between OS versions~~ 
-    * Move to declare package and version in single place referencing just the package name in the diagram
-    * Move puml diagram output to separate block to our log messages so any information about the diagram generation doesn't get mixed into the diagram itself
-    * Update tests to use Google's cmp library
+  * ~~Move model parsing to puml.go~~
+  * Update puml.go to add the starting dependency to the title of the graph
+  * Add puml tests
+    * Case where package has no dependencies, should we show just the package e.g. dos2unix?
+    * New line support, how to escape it in a golang string but have `\n` print in standard out?
+    * Support dependency version conditions on relationship  e.g. python(>2.7) dot label syntax `[label = ">= 2.7"]`
+  * Update diagram to include OS version in title and filename?
+  * ~~Add package versions to assist with comparisons between OS versions~~  
+  * Move to declare package and version in single place referencing just the package name in the diagram
+  * Move puml diagram output to separate block to our log messages so any information about the diagram generation doesn't get mixed into the diagram itself
+  * Update tests to use Google's cmp library
+  * Switch puml generation to use golang templating
 * Add Makefile with goals
   * Build
   * Test
