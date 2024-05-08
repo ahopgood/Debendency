@@ -4,11 +4,11 @@ build:
 	go build -o build/debendency main.go
 
 test:
-	ginkgo --skip-package integrationtests -cover
+	ginkgo -r --skip-package integrationtests -cover
 
 # Integration tests
 int:
-	ginkgo --skip-package pkg
+	ginkgo -r --skip-package pkg
 
 fmt:
 

@@ -83,7 +83,6 @@ func (d Digraph) Contents() string {
 	for _, value := range d.dependencies {
 		output = output + "\t" + "\"" + value.From + "\\n(" + value.FromVersion + ")\"" +
 			" -> " + "\"" + value.To + "\\n(" + value.ToVersion + ")\"\n"
-
 	}
 	output = output + "\n" + d.end + "\n"
 	return output

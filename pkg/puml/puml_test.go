@@ -3,6 +3,7 @@ package puml_test
 import (
 	"com/alexander/debendency/pkg"
 	"com/alexander/debendency/pkg/puml"
+	"github.com/google/go-cmp/cmp"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"os"
@@ -100,7 +101,9 @@ var _ = Describe("Puml", func() {
 				testFile, err := os.ReadFile("internal/EmptyDiagram.puml")
 				Expect(err).ToNot(HaveOccurred())
 
-				pumlDiagram := puml.GenerateDiagram(config, modelMap).Contents()
+				emptyModelMap := map[string]*pkg.PackageModel{}
+
+				pumlDiagram := puml.GenerateDiagram(config, emptyModelMap).Contents()
 				Expect(pumlDiagram).To(Equal(string(testFile)))
 			})
 		})
@@ -114,7 +117,9 @@ var _ = Describe("Puml", func() {
 				Expect(err).ToNot(HaveOccurred())
 
 				pumlDiagram := puml.GenerateDiagram(config, modelMap).Contents()
-				Expect(pumlDiagram).To(Equal(string(testFile)))
+				//Expect(pumlDiagram).To(Equal(string(testFile)))
+				diff := cmp.Diff(pumlDiagram, string(testFile))
+				Expect(diff).To(BeEmpty())
 			})
 		})
 
@@ -127,7 +132,9 @@ var _ = Describe("Puml", func() {
 				Expect(err).ToNot(HaveOccurred())
 
 				pumlDiagram := puml.GenerateDiagram(config, modelMap).Contents()
-				Expect(pumlDiagram).To(Equal(string(testFile)))
+				//Expect(pumlDiagram).To(Equal(string(testFile)))
+				diff := cmp.Diff(pumlDiagram, string(testFile))
+				Expect(diff).To(BeEmpty())
 			})
 
 		})
