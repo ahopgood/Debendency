@@ -51,10 +51,10 @@ ginkgo -r -v
 * Add puml output
   * ~~Move model parsing to puml.go~~
   * Update puml.go to add the starting dependency to the title of the graph
-  * Add puml tests
-    * Case where package has no dependencies, should we show just the package e.g. dos2unix?
-    * New line support, how to escape it in a golang string but have `\n` print in standard out?
-    * Support dependency version conditions on relationship  e.g. python(>2.7) dot label syntax `[label = ">= 2.7"]`
+  * ~~Add puml tests~~
+  * Case where package has no dependencies, should we show just the package e.g. dos2unix?
+  * New line support, how to escape it in a golang string but have `\n` print in standard out?
+  * Support dependency version conditions on relationship  e.g. python(>2.7) dot label syntax `[label = ">= 2.7"]`
   * Update diagram to include OS version in title and filename?
   * ~~Add package versions to assist with comparisons between OS versions~~  
   * Move to declare package and version in single place referencing just the package name in the diagram
@@ -62,7 +62,7 @@ ginkgo -r -v
   * Update tests to use Google's cmp library
   * Switch puml generation to use golang templating
 * Add Makefile with goals
-  * Build
+  * ~~Build~~
   * Test
   * Integration test
   * Linting?
@@ -75,10 +75,15 @@ ginkgo -r -v
     * Default location of cache `~/debendency/cache`
     * Flag to specify location for the cache
     * Flag to delete download cache after use?
+    * Save model structs to a json file
+  * Versionless puml output
+  * Puml Diff
+    * Versionless
+    * Versioned
   * Hide already installed packages
     * Useful if you only need to know the dependencies that still need to be installed on a system
-    * Add command line flag
-    * Add command to check if installed
+    * ~~Add command line flag~~
+    * ~~Add command to check if installed~~
     * Add integration tests
     * Add unit tests
     * Add interface to call to ensure model has installed boolean set
