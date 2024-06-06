@@ -14,14 +14,14 @@ fmt:
 
 lint:
 
-coverage-html:
-	coverage-clean test
-	go cover
+coverage-html: coverage-clean test
+	go tool cover -html=coverprofile.out -o coverage.html
 
-coverage-cli:
-	coverage-clean test
+coverage-cli: coverage-clean test
+	go tool cover -func=coverprofile.out
 
 coverage-clean:
+	- rm 'coverprofile.out'
 
 ## Show this help message.
 help:
