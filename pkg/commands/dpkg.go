@@ -11,7 +11,7 @@ type Dpkg interface {
 	ParseDependencies(output string) []string
 }
 
-type DkpgQuery interface {
+type DpkgQuery interface {
 	IsInstalled(packageName string) bool
 }
 
