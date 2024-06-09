@@ -23,7 +23,7 @@ type Analyser struct {
 	Apt    commands.Apt
 	Dpkg   commands.Dpkg
 	Config *Config
-	Query  commands.DkpgQuery
+	Query  commands.DpkgQuery
 }
 
 func NewAnalyser(config *Config) Analyser {

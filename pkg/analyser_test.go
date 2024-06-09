@@ -59,9 +59,17 @@ var _ = Describe("Analyser", func() {
 				apter.DownloadPackageReturns("", 0, errors.New("not found"))
 
 				dpkger := &internal.FakeDpkg{}
+				dpkgQuery := &internal.FakeDpkgQuery{}
+
+				config := &pkg.Config{
+					ExcludeInstalledPackages: false,
+				}
+
 				packager := pkg.Analyser{
-					Apt:  apter,
-					Dpkg: dpkger,
+					Apt:    apter,
+					Dpkg:   dpkger,
+					Config: config,
+					Query:  dpkgQuery,
 				}
 
 				modelMap := make(map[string]*pkg.PackageModel)
@@ -80,6 +88,9 @@ var _ = Describe("Analyser", func() {
 				By("Dpkg not being invoked", func() {
 					Expect(dpkger.IdentifyDependenciesCallCount()).To(Equal(0))
 				})
+				By("DpkgQuery not being invoked", func() {
+					Expect(dpkgQuery.IsInstalledCallCount()).To(Equal(0))
+				})
 			})
 		})
 
@@ -93,9 +104,17 @@ var _ = Describe("Analyser", func() {
 				dpkger := &internal.FakeDpkg{}
 				dpkger.IdentifyDependenciesReturns([]string{})
 
+				dpkgQuery := &internal.FakeDpkgQuery{}
+
+				config := &pkg.Config{
+					ExcludeInstalledPackages: false,
+				}
+
 				packager := pkg.Analyser{
-					Apt:  apter,
-					Dpkg: dpkger,
+					Apt:    apter,
+					Dpkg:   dpkger,
+					Config: config,
+					Query:  dpkgQuery,
 				}
 
 				modelMap := make(map[string]*pkg.PackageModel)
@@ -113,6 +132,9 @@ var _ = Describe("Analyser", func() {
 					Expect(apter.DownloadPackageCallCount()).To(Equal(1))
 					Expect(dpkger.IdentifyDependenciesCallCount()).To(Equal(1))
 				})
+				By("DpkgQuery not being invoked", func() {
+					Expect(dpkgQuery.IsInstalledCallCount()).To(Equal(0))
+				})
 			})
 		})
 
@@ -128,9 +150,17 @@ var _ = Describe("Analyser", func() {
 				dpkger.IdentifyDependenciesReturnsOnCall(0, []string{"libc6"})
 				dpkger.IdentifyDependenciesReturnsOnCall(1, []string{})
 
+				dpkgQuery := &internal.FakeDpkgQuery{}
+
+				config := &pkg.Config{
+					ExcludeInstalledPackages: false,
+				}
+
 				packager := pkg.Analyser{
-					Apt:  apter,
-					Dpkg: dpkger,
+					Apt:    apter,
+					Dpkg:   dpkger,
+					Config: config,
+					Query:  dpkgQuery,
 				}
 
 				modelMap := make(map[string]*pkg.PackageModel)
@@ -159,10 +189,13 @@ var _ = Describe("Analyser", func() {
 					model := modelMap["dos2unix"]
 					Expect(model.Dependencies["libc6"]).To(Not(BeNil()))
 				})
+				By("DpkgQuery not being invoked", func() {
+					Expect(dpkgQuery.IsInstalledCallCount()).To(Equal(0))
+				})
 			})
 		})
 
-		FWhen("Package has shared dependencies", func() {
+		When("Package has shared dependencies", func() {
 			It("Produces four models", func() {
 				// Successfully download the debendency
 				apter := &internal.FakeApt{}
@@ -178,9 +211,17 @@ var _ = Describe("Analyser", func() {
 				dpkger.IdentifyDependenciesReturnsOnCall(2, []string{"libc6"})
 				dpkger.IdentifyDependenciesReturnsOnCall(3, []string{})
 
+				dpkgQuery := &internal.FakeDpkgQuery{}
+
+				config := &pkg.Config{
+					ExcludeInstalledPackages: false,
+				}
+
 				packager := pkg.Analyser{
-					Apt:  apter,
-					Dpkg: dpkger,
+					Apt:    apter,
+					Dpkg:   dpkger,
+					Config: config,
+					Query:  dpkgQuery,
 				}
 
 				modelMap := make(map[string]*pkg.PackageModel)
@@ -233,6 +274,9 @@ var _ = Describe("Analyser", func() {
 				By("Producing a puml diagram", func() {
 
 					fmt.Println(puml.GenerateDiagram(&pkg.Config{}, modelMap))
+				})
+				By("DpkgQuery not being invoked", func() {
+					Expect(dpkgQuery.IsInstalledCallCount()).To(Equal(0))
 				})
 			})
 		})
