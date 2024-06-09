@@ -15,13 +15,13 @@ Vagrant.configure("2") do |config|
   config.vm.define "ubuntu18" do |server|
       server.vm.box = "reclusive/bionic64-salt"
       server.vm.box_version = "0.0.2023-04-09-1907"
-      server.ssh.private_key_path = ["C:/Users/Alexander/.vagrant.d/insecure_private_key","C:/Users/Alexander/.vagrant.d/20170926_vagrant_private_key"]
+      server.ssh.private_key_path = ["~/.vagrant.d/insecure_private_key","~/.vagrant.d/20170926_vagrant_private_key"]
   end
 
   config.vm.define "ubuntu20" do |server|
       config.vm.box = "reclusive/focal64"
       config.vm.box_version = "0.0.2023-08-03-1835"
-      server.ssh.private_key_path = ["C:/Users/Alexander/.vagrant.d/insecure_private_key","C:/Users/Alexander/.vagrant.d/20170926_vagrant_private_key"]
+      server.ssh.private_key_path = ["~/.vagrant.d/insecure_private_key","~/.vagrant.d/20170926_vagrant_private_key"]
   end
 
   # Disable automatic box update checking. If you disable this, then
@@ -80,15 +80,19 @@ Vagrant.configure("2") do |config|
       ~/.local/bin/mise --version
       echo 'eval "$(~/.local/bin/mise activate bash)"' >> ~/.bashrc
 
-      ~/.local/bin/mise use go@1.20
+      ~/.local/bin/mise settings set experimental true
+      ~/.local/bin/mise install
 
       # Ginkgo needs to be installed for the ginkgo extension to work
-      export TEMP_GO="/home/vagrant/.local/share/mise/installs/go/1.20/bin/"
-      ${TEMP_GO}go install github.com/onsi/ginkgo/v2/ginkgo@v2.12.0
+#       export TEMP_GO="/home/vagrant/.local/share/mise/installs/go/1.20/bin/"
+
+#       ${TEMP_GO}go install github.com/onsi/ginkgo/v2/ginkgo@v2.12.0
       # Should install to the below location but I cannot invoke it
       #/home/vagrant/.local/share/mise/installs/go/1.20/bin/ginkgo
 
-      ${TEMP_GO}go install github.com/maxbrunsfeld/counterfeiter/v6@v6.7.0
+#       ${TEMP_GO}go install github.com/maxbrunsfeld/counterfeiter/v6@v6.7.0
+#         ~/.local/bin/mise use go:github.com/maxbrunsfeld/counterfeiter/v6@v6.7.0
+
 #       ls -l /home/vagrant/go/bin/
 #       whoami
     SHELL
