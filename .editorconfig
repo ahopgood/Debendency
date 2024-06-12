@@ -1,4 +1,8 @@
 root = true
+
+[*.go]
+end_of_line = lf
+
 [Makefile]
 end_of_line = lf
 indent_style = tab

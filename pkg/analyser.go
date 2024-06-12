@@ -89,7 +89,7 @@ func (packageModel *PackageModel) GetPackageFilename(name string) {
 	fmt.Printf("Package download output: %#v\n", name)
 	outputArray := strings.Split(name, "\n")
 	fmt.Printf("Number of lines: %d\n", len(outputArray))
-	for index, _ := range outputArray {
+	for index := range outputArray {
 		fmt.Println(outputArray[index])
 	}
 

@@ -8,7 +8,7 @@ import (
 
 var _ = Describe("Dpkg", func() {
 
-	FWhen("dpkg-query", func() {
+	When("dpkg-query", func() {
 		//dpkg-query -W libgcc-s1
 		//libgcc-s1:amd64 10.5.0-1ubuntu1~20.04
 		//vagrant@vagrant:/vagrant$ echo $?
