@@ -1,18 +1,26 @@
-.PHONY: build
+.PHONY: build generate
 
 build:
 	go build -o build/debendency main.go
 
 test:
-	ginkgo -r --skip-package integrationtests -cover
+	ginkgo -r -cover --skip-package integrationtests
 
 # Integration tests
 int:
-	ginkgo -r --skip-package pkg
+	ginkgo -v -r --skip-package pkg
 
 fmt:
+	gofmt -s -w .
+	golangci-lint run --fast --fix
 
 lint:
+	golangci-lint run
+
+generate:
+	go generate ./...
+	#go generate pkg
+# needs to be in pkg
 
 coverage-html: coverage-clean test
 	go tool cover -html=coverprofile.out -o coverage.html
