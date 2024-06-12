@@ -1,4 +1,4 @@
-package commands_test
+package integrationtests_test
 
 import (
 	"com/alexander/debendency/pkg/commands"
