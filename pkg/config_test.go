@@ -2,6 +2,7 @@ package pkg_test
 
 import (
 	"com/alexander/debendency/pkg"
+	"github.com/google/go-cmp/cmp"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
@@ -50,6 +51,58 @@ var _ = Describe("Config", func() {
 			Expect(config.ExcludeInstalledPackages).To(BeTrue())
 			Expect(output).To(BeEmpty())
 			Expect(err).To(BeNil())
+		})
+	})
+
+	When("no flags set", func() {
+		It("Should provide defaults", func() {
+			config, output, err := pkg.ParseFlags("", []string{})
+			expectedConfig := pkg.Config{
+				PackageName:              "",
+				GenerateSalt:             false,
+				GenerateDiagram:          false,
+				InstallerLocation:        "~/.debendency/cache",
+				ExcludeInstalledPackages: false,
+			}
+			Expect(cmp.Diff(config, &expectedConfig)).To(BeEmpty())
+			Expect(output).To(BeEmpty())
+			Expect(err).To(BeNil())
+		})
+	})
+
+	When("help (-h) flag set", func() {
+		It("should trigger the help output", func() {
+			config, output, err := pkg.ParseFlags("", []string{"-h"})
+
+			By("not initialising the config with defaults", func() {
+				Expect(config).To(BeNil())
+			})
+
+			By("printing out usage", func() {
+				Expect(output).To(Not(BeEmpty()))
+			})
+
+			By("returning the flag error", func() {
+				Expect(err.Error()).To(Equal("flag: help requested"))
+			})
+		})
+	})
+
+	When("unknown flag (-z) flag set", func() {
+		It("should trigger the help output", func() {
+			config, output, err := pkg.ParseFlags("", []string{"-z"})
+
+			By("not initialising the config with defaults", func() {
+				Expect(config).To(BeNil())
+			})
+
+			By("printing out usage", func() {
+				Expect(output).To(Not(BeEmpty()))
+			})
+
+			By("returning the flag error", func() {
+				Expect(err.Error()).To(Equal("flag provided but not defined: -z"))
+			})
 		})
 	})
 })
