@@ -80,6 +80,7 @@ Vagrant.configure("2") do |config|
       ~/.local/bin/mise --version
       echo 'eval "$(~/.local/bin/mise activate bash)"' >> ~/.bashrc
 
+      cd /vagrant
       ~/.local/bin/mise settings set experimental true
       ~/.local/bin/mise install
 
