@@ -20,7 +20,7 @@ var _ = Describe("Config", func() {
 
 	When("generate salt (-s) flag set", func() {
 		It("Should set Config.GenerateSalt", func() {
-			config, output, err := pkg.ParseFlags("", []string{"-s", "test.deb"})
+			config, output, err := pkg.ParseFlags("", []string{"-s", "-p", "test.deb"})
 			Expect(config.GenerateSalt).To(BeTrue())
 			Expect(output).To(BeEmpty())
 			Expect(err).To(BeNil())
@@ -29,7 +29,7 @@ var _ = Describe("Config", func() {
 
 	When("diagram (-d)  flag set", func() {
 		It("Should set Config.GenerateDiagram", func() {
-			config, output, err := pkg.ParseFlags("", []string{"-d", "test.deb"})
+			config, output, err := pkg.ParseFlags("", []string{"-d", "-p", "test.deb"})
 			Expect(config.GenerateDiagram).To(BeTrue())
 			Expect(output).To(BeEmpty())
 			Expect(err).To(BeNil())
@@ -38,7 +38,7 @@ var _ = Describe("Config", func() {
 
 	When("installer location (-o)  flag set", func() {
 		It("Should set Config.InstallerLocation", func() {
-			config, output, err := pkg.ParseFlags("", []string{"-o", "somedir"})
+			config, output, err := pkg.ParseFlags("", []string{"-o", "somedir", "-p", "test.deb"})
 			Expect(config.InstallerLocation).To(Equal("somedir"))
 			Expect(output).To(BeEmpty())
 			Expect(err).To(BeNil())
@@ -47,18 +47,18 @@ var _ = Describe("Config", func() {
 
 	When("exclude installed packages (-e)  flag set", func() {
 		It("Should set Config.ExcludeInstalledPackages", func() {
-			config, output, err := pkg.ParseFlags("", []string{"-e", "test.deb"})
+			config, output, err := pkg.ParseFlags("", []string{"-e", "-p", "test.deb"})
 			Expect(config.ExcludeInstalledPackages).To(BeTrue())
 			Expect(output).To(BeEmpty())
 			Expect(err).To(BeNil())
 		})
 	})
 
-	When("no flags set", func() {
+	When("no flags except package set", func() {
 		It("Should provide defaults", func() {
-			config, output, err := pkg.ParseFlags("", []string{})
+			config, output, err := pkg.ParseFlags("", []string{"-p", "test.deb"})
 			expectedConfig := pkg.Config{
-				PackageName:              "",
+				PackageName:              "test.deb",
 				GenerateSalt:             false,
 				GenerateDiagram:          false,
 				InstallerLocation:        "~/.debendency/cache",
@@ -67,6 +67,25 @@ var _ = Describe("Config", func() {
 			Expect(cmp.Diff(config, &expectedConfig)).To(BeEmpty())
 			Expect(output).To(BeEmpty())
 			Expect(err).To(BeNil())
+		})
+	})
+
+	When("package flag not set", func() {
+		It("should trigger the help output", func() {
+			config, output, err := pkg.ParseFlags("dummy program", []string{})
+
+			By("not initialising the config with defaults", func() {
+				Expect(config).To(BeNil())
+			})
+
+			By("printing out usage", func() {
+				Expect(output).To(Not(BeEmpty()))
+				//fmt.Print(output)
+			})
+
+			By("returning the flag error", func() {
+				Expect(err.Error()).To(Equal("flag: need to specify a package name via -p flag"))
+			})
 		})
 	})
 
