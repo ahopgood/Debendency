@@ -104,7 +104,8 @@ var _ = Describe("Puml", func() {
 				emptyModelMap := map[string]*pkg.PackageModel{}
 
 				pumlDiagram := puml.GenerateDiagram(config, emptyModelMap).Contents()
-				Expect(cmp.Diff(pumlDiagram, string(testFile))).To(BeEmpty())
+				Expect(pumlDiagram).To(Equal(string(testFile)))
+				//Expect(cmp.Diff(pumlDiagram, string(testFile))).To(BeEmpty())
 			})
 		})
 
@@ -138,5 +139,33 @@ var _ = Describe("Puml", func() {
 			})
 
 		})
+
+		When("Model has no dependencies", func() {
+			config := &pkg.Config{
+				ExcludeInstalledPackages: false,
+			}
+
+			docker := &pkg.PackageModel{
+				Name:        "docker-ce",
+				Version:     "1.6-1ubuntu0.20.04.1",
+				Filepath:    "jq_1.6-1ubuntu0.20.04.1_amd64.deb",
+				IsInstalled: false,
+			}
+
+			modelMap := map[string]*pkg.PackageModel{
+				"docker-ce": docker,
+			}
+
+			It("Should show root package", func() {
+				testFile, err := os.ReadFile("internal/NoDependencies.puml")
+				Expect(err).ToNot(HaveOccurred())
+
+				pumlDiagram := puml.GenerateDiagram(config, modelMap).Contents()
+				//Expect(pumlDiagram).To(Equal(string(testFile)))
+				diff := cmp.Diff(pumlDiagram, string(testFile))
+				Expect(diff).To(BeEmpty())
+			})
+		})
+
 	})
 })
