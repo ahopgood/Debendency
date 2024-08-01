@@ -1,9 +1,21 @@
 package puml
 
 import (
+	"bytes"
 	"com/alexander/debendency/pkg"
 	"fmt"
+	"text/template"
 )
+
+var saltTemplate = `@startuml
+digraph test {
+{{range .}}
+	"{{.From}}\n({{.FromVersion}})" -> "{{.To}}\n({{.ToVersion}})"
+{{- end}}
+
+}
+
+@enduml`
 
 func GenerateDiagram(config *pkg.Config, modelMap map[string]*pkg.PackageModel) Uml {
 	dependencies := make([]Dependency, 0)
@@ -28,6 +40,18 @@ func GenerateDiagram(config *pkg.Config, modelMap map[string]*pkg.PackageModel) 
 	puml := NewUml(
 		NewDigraph(dependencies),
 	)
+
+	tmpl, err := template.New("puml").Parse(saltTemplate)
+	if err != nil {
+		panic(err)
+	}
+
+	var b bytes.Buffer
+	err = tmpl.Execute(&b, dependencies)
+	if err != nil {
+		panic(err)
+	}
+	puml.Buffer = b
 	return puml
 }
 
@@ -39,6 +63,7 @@ type Uml struct {
 	start   string
 	diagram UmlDiagram
 	end     string
+	Buffer  bytes.Buffer
 }
 
 func NewUml(umlDiagram UmlDiagram) Uml {
@@ -50,7 +75,8 @@ func NewUml(umlDiagram UmlDiagram) Uml {
 }
 
 func (uml Uml) Contents() string {
-	return uml.start + uml.diagram.Contents() + uml.end
+	return uml.Buffer.String()
+	//return uml.start + uml.diagram.Contents() + uml.end
 }
 
 type Digraph struct {
