@@ -7,6 +7,7 @@ end_of_line = lf
 end_of_line = lf
 indent_style = tab
 
-[**\*.puml]
+[*.puml]
 end_of_line = lf
-indent_style = tab
+indent_style = space
+indent_size = 4

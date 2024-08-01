@@ -104,7 +104,7 @@ var _ = Describe("Puml", func() {
 				emptyModelMap := map[string]*pkg.PackageModel{}
 
 				pumlDiagram := puml.GenerateDiagram(config, emptyModelMap).Contents()
-				Expect(pumlDiagram).To(Equal(string(testFile)))
+				Expect(cmp.Diff(pumlDiagram, string(testFile))).To(BeEmpty())
 			})
 		})
 
