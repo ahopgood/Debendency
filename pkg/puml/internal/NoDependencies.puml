@@ -1,7 +1,7 @@
 @startuml
 digraph test {
+    "docker-ce" [label="docker-ce\n(18.09.7~3-0~ubuntu-xenial)"];
 
-    docker-ce -> ()
 
 }
 

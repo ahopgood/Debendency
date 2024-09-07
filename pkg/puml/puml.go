@@ -10,18 +10,47 @@ import (
 var saltTemplate = `@startuml
 digraph test {
 {{range .}}
-	"{{.From}}\n({{.FromVersion}})" -> "{{.To}}\n({{.ToVersion}})"
+	"{{.From}}\n({{.FromVersion}})"{{if .To}} -> "{{.To}}\n({{.ToVersion}})"{{end}}
 {{- end}}
 
 }
 
 @enduml`
 
-func GenerateDiagram(config *pkg.Config, modelMap map[string]*pkg.PackageModel) Uml {
+var pumlTemplate = `@startuml
+digraph test {
+{{- range .Packages}}
+    "{{.Name}}" [label="{{.Name}}\n({{.Version}})"];
+{{- end}}
+{{range .Dependencies}}
+{{if .To}}    "{{.From}}" -> "{{.To}}"{{end}}
+{{- end}}
+}
+
+@enduml`
+
+func GenerateDiagram(config *pkg.Config, modelMap map[string]*pkg.PackageModel, modelList []*pkg.PackageModel) Uml {
 	dependencies := make([]Dependency, 0)
-	for key, fromModel := range modelMap {
-		fmt.Printf("%s %#v\n", key, fromModel)
-		for _, toModel := range fromModel.Dependencies {
+	packages := make([]Package, 0)
+	for _, fromModel := range modelList {
+		fmt.Printf("%s %#v\n", fromModel.Name, fromModel)
+
+		if config.ExcludeInstalledPackages && fromModel.IsInstalled {
+
+		} else {
+			packages = append(packages, Package{
+				Name:    fromModel.Name,
+				Version: fromModel.Version,
+			})
+		}
+
+		if fromModel.Dependencies == nil {
+			dependencies = append(dependencies, Dependency{
+				From:        fromModel.Name,
+				FromVersion: fromModel.Version,
+			})
+		}
+		for _, toModel := range fromModel.OrderedDependencies {
 			//if config.ExcludeInstalledPackages && (fromModel.IsInstalled && toModel.IsInstalled) {
 			if config.ExcludeInstalledPackages && toModel.IsInstalled {
 				//fmt.Printf()
@@ -37,17 +66,22 @@ func GenerateDiagram(config *pkg.Config, modelMap map[string]*pkg.PackageModel) 
 			}
 		}
 	}
+	//slices.Sort(dependencies)
 	puml := NewUml(
 		NewDigraph(dependencies),
 	)
 
-	tmpl, err := template.New("puml").Parse(saltTemplate)
+	pumlModel := PumlModel{
+		Packages:     packages,
+		Dependencies: dependencies,
+	}
+	tmpl, err := template.New("puml").Parse(pumlTemplate)
 	if err != nil {
 		panic(err)
 	}
 
 	var b bytes.Buffer
-	err = tmpl.Execute(&b, dependencies)
+	err = tmpl.Execute(&b, pumlModel)
 	if err != nil {
 		panic(err)
 	}
@@ -93,15 +127,6 @@ func NewDigraph(dependencies []Dependency) Digraph {
 	}
 }
 
-// Represents a dependency From one thing To another
-// E.g. "salt-master" -> "salt-common"
-type Dependency struct {
-	From        string
-	FromVersion string
-	To          string
-	ToVersion   string
-}
-
 // Uml Diagram implementation
 func (d Digraph) Contents() string {
 	fmt.Println("Building diagraph contents")
@@ -112,4 +137,23 @@ func (d Digraph) Contents() string {
 	}
 	output = output + "\n" + d.end + "\n"
 	return output
+}
+
+type PumlModel struct {
+	Dependencies []Dependency
+	Packages     []Package
+}
+
+type Package struct {
+	Name    string
+	Version string
+}
+
+// Represents a dependency From one thing To another
+// E.g. "salt-master" -> "salt-common"
+type Dependency struct {
+	From        string
+	FromVersion string
+	To          string
+	ToVersion   string
 }

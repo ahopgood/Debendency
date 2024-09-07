@@ -12,11 +12,12 @@ import (
 //counterfeiter:generate -o internal/fake_query.go com/alexander/debendency/pkg/commands.DpkgQuery
 
 type PackageModel struct {
-	Filepath     string
-	Name         string
-	Version      string
-	Dependencies map[string]*PackageModel
-	IsInstalled  bool
+	Filepath            string
+	Name                string
+	Version             string
+	Dependencies        map[string]*PackageModel
+	OrderedDependencies []*PackageModel
+	IsInstalled         bool
 }
 
 type Analyser struct {
@@ -47,10 +48,11 @@ func NewAnalyser(config *Config) Analyser {
 
 func (packager Analyser) Start(name string) *PackageModel {
 	modelMap := make(map[string]*PackageModel)
-	return packager.BuildPackage(name, modelMap)
+	modelList := make([]*PackageModel, 0)
+	return packager.BuildPackage(name, modelMap, modelList)
 }
 
-func (packager Analyser) BuildPackage(name string, modelMap map[string]*PackageModel) *PackageModel {
+func (packager Analyser) BuildPackage(name string, modelMap map[string]*PackageModel, modelList []*PackageModel) *PackageModel {
 	model, ok := modelMap[name]
 	if ok {
 		return model
@@ -70,17 +72,21 @@ func (packager Analyser) BuildPackage(name string, modelMap map[string]*PackageM
 	// Add packageModel to map under package name
 	// packageModel.Name
 	modelMap[packageModel.Name] = &packageModel
+	// Add packageModel to model List in order of addition (as a map won't record this)
+	modelList = append(modelList, &packageModel)
 	// Iterate through dependencies
 	dependencyNames := packager.Dpkg.IdentifyDependencies(packageModel.Filepath)
 
 	fmt.Printf("Dependencies %#v\n", dependencyNames)
 	fmt.Printf("Dependencies length %d\n", len(dependencyNames))
 	packageModel.Dependencies = make(map[string]*PackageModel, len(dependencyNames))
+	packageModel.OrderedDependencies = make([]*PackageModel, len(dependencyNames))
 
 	for _, name := range dependencyNames {
 		fmt.Printf("Building dependency [%s] for %s \n", name, packageModel.Name)
-		dep := packager.BuildPackage(name, modelMap)
+		dep := packager.BuildPackage(name, modelMap, modelList)
 		packageModel.Dependencies[dep.Name] = dep
+		packageModel.OrderedDependencies = append(packageModel.OrderedDependencies, dep)
 	}
 	return &packageModel
 }

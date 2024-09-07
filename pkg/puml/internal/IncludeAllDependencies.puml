@@ -1,15 +1,22 @@
 @startuml
 digraph test {
+    "jq" [label="jq\n(1.6-1ubuntu0.20.04.1)"];
+    "libc6" [label="libc6\n(2.31-0ubuntu9.15)"];
+    "libonig5" [label="libonig5\n(6.9.4-1)"];
+    "libjq1" [label="libjq1\n(1.6-1ubuntu0.20.04.1)"];
+    "libgcc-s1" [label="libgcc-s1\n(10.5.0-1ubuntu1~20.04)"];
+    "gcc-10-base" [label="gcc-10-base\n(10.5.0-1ubuntu1~20.04)"];
+    "libcrypt1" [label="libcrypt1\n(1:4.4.10-10ubuntu4)"];
 
-	"jq\n(1.6-1ubuntu0.20.04.1)" -> "libjq1\n(1.6-1ubuntu0.20.04.1)"
-	"jq\n(1.6-1ubuntu0.20.04.1)" -> "libc6\n(2.31-0ubuntu9.15)"
-	"libjq1\n(1.6-1ubuntu0.20.04.1)" -> "libonig5\n(6.9.4-1)"
-	"libjq1\n(1.6-1ubuntu0.20.04.1)" -> "libc6\n(2.31-0ubuntu9.15)"
-	"libonig5\n(6.9.4-1)" -> "libc6\n(2.31-0ubuntu9.15)"
-	"libc6\n(2.31-0ubuntu9.15)" -> "libgcc-s1\n(10.5.0-1ubuntu1~20.04)"
-	"libc6\n(2.31-0ubuntu9.15)" -> "libcrypt1\n(1:4.4.10-10ubuntu4)"
-	"libgcc-s1\n(10.5.0-1ubuntu1~20.04)" -> "gcc-10-base\n(10.5.0-1ubuntu1~20.04)"
-	"libgcc-s1\n(10.5.0-1ubuntu1~20.04)" -> "libc6\n(2.31-0ubuntu9.15)"
+    "jq" -> "libjq1"
+    "jq" -> "libc6"
+    "libc6" -> "libgcc-s1"
+    "libc6" -> "libcrypt1"
+    "libonig5" -> "libc6"
+    "libjq1" -> "libonig5"
+    "libjq1" -> "libc6"
+    "libgcc-s1" -> "gcc-10-base"
+    "libgcc-s1" -> "libc6"
 
 }
 

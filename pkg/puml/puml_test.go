@@ -3,6 +3,7 @@ package puml_test
 import (
 	"com/alexander/debendency/pkg"
 	"com/alexander/debendency/pkg/puml"
+	"fmt"
 	"github.com/google/go-cmp/cmp"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -23,7 +24,7 @@ var _ = Describe("Puml", func() {
 		Filepath:    "libjq1_1.6-1ubuntu0.20.04.1_amd64.deb",
 		IsInstalled: false,
 	}
-	ibonig5 := &pkg.PackageModel{
+	libonig5 := &pkg.PackageModel{
 		Name:        "libonig5",
 		Version:     "6.9.4-1",
 		Filepath:    "libonig5_6.9.4-1_amd64.deb",
@@ -63,7 +64,7 @@ var _ = Describe("Puml", func() {
 	modelMap := map[string]*pkg.PackageModel{
 		"jq":          jq,
 		"libjq1":      libjq1,
-		"ibonig5":     ibonig5,
+		"libonig5":    libonig5,
 		"libc6":       libc6,
 		"libgcc-s1":   libgcc_s1,
 		"gcc-10-base": gcc_10_base,
@@ -74,22 +75,55 @@ var _ = Describe("Puml", func() {
 		"libjq1": libjq1,
 		"libc6":  libc6,
 	}
+	jq.OrderedDependencies = []*pkg.PackageModel{
+		libjq1,
+		libc6,
+	}
 
 	libjq1.Dependencies = map[string]*pkg.PackageModel{
-		"ibonig5": ibonig5,
-		"libc6":   libc6,
+		"libonig5": libonig5,
+		"libc6":    libc6,
 	}
-	ibonig5.Dependencies = map[string]*pkg.PackageModel{
+	libjq1.OrderedDependencies = []*pkg.PackageModel{
+		libonig5,
+		libc6,
+	}
+
+	libonig5.Dependencies = map[string]*pkg.PackageModel{
 		"libc6": libc6,
 	}
+	libonig5.OrderedDependencies = []*pkg.PackageModel{
+		libc6,
+	}
+
 	libc6.Dependencies = map[string]*pkg.PackageModel{
 		"libgcc-s1": libgcc_s1,
 		"libcrypt1": libcrypt1,
+	}
+	libc6.OrderedDependencies = []*pkg.PackageModel{
+		libgcc_s1,
+		libcrypt1,
 	}
 
 	libgcc_s1.Dependencies = map[string]*pkg.PackageModel{
 		"gcc-10-base": gcc_10_base,
 		"libc6":       libc6,
+	}
+	libgcc_s1.OrderedDependencies = []*pkg.PackageModel{
+		gcc_10_base,
+		libc6,
+	}
+	//Important to test we don't create an empty relation
+	gcc_10_base.Dependencies = nil
+
+	modelList := []*pkg.PackageModel{
+		jq,
+		libc6,
+		libonig5,
+		libjq1,
+		libgcc_s1,
+		gcc_10_base,
+		libcrypt1,
 	}
 
 	When("Generate Diagram", func() {
@@ -102,8 +136,9 @@ var _ = Describe("Puml", func() {
 				Expect(err).ToNot(HaveOccurred())
 
 				emptyModelMap := map[string]*pkg.PackageModel{}
+				emptyModelList := []*pkg.PackageModel{}
 
-				pumlDiagram := puml.GenerateDiagram(config, emptyModelMap).Contents()
+				pumlDiagram := puml.GenerateDiagram(config, emptyModelMap, emptyModelList).Contents()
 				Expect(pumlDiagram).To(Equal(string(testFile)))
 				//Expect(cmp.Diff(pumlDiagram, string(testFile))).To(BeEmpty())
 			})
@@ -117,7 +152,11 @@ var _ = Describe("Puml", func() {
 				testFile, err := os.ReadFile("internal/IncludeAllDependencies.puml")
 				Expect(err).ToNot(HaveOccurred())
 
-				pumlDiagram := puml.GenerateDiagram(config, modelMap).Contents()
+				pumlDiagram := puml.GenerateDiagram(config, modelMap, modelList).Contents()
+				fmt.Println("Expected")
+				fmt.Println(string(testFile))
+				fmt.Println("Actual")
+				fmt.Println(pumlDiagram)
 				//Expect(pumlDiagram).To(Equal(string(testFile)))
 				diff := cmp.Diff(pumlDiagram, string(testFile))
 				Expect(diff).To(BeEmpty())
@@ -132,12 +171,15 @@ var _ = Describe("Puml", func() {
 				testFile, err := os.ReadFile("internal/ExcludeInstalledDependencies.puml")
 				Expect(err).ToNot(HaveOccurred())
 
-				pumlDiagram := puml.GenerateDiagram(config, modelMap).Contents()
+				pumlDiagram := puml.GenerateDiagram(config, modelMap, modelList).Contents()
+				fmt.Println("Expected")
+				fmt.Println(string(testFile))
+				fmt.Println("Actual")
+				fmt.Println(pumlDiagram)
 				//Expect(pumlDiagram).To(Equal(string(testFile)))
 				diff := cmp.Diff(pumlDiagram, string(testFile))
 				Expect(diff).To(BeEmpty())
 			})
-
 		})
 
 		When("Model has no dependencies", func() {
@@ -147,25 +189,32 @@ var _ = Describe("Puml", func() {
 
 			docker := &pkg.PackageModel{
 				Name:        "docker-ce",
-				Version:     "1.6-1ubuntu0.20.04.1",
-				Filepath:    "jq_1.6-1ubuntu0.20.04.1_amd64.deb",
+				Version:     "18.09.7~3-0~ubuntu-xenial",
+				Filepath:    "18.09.7~3-0~ubuntu-xenial_amd64.deb",
 				IsInstalled: false,
 			}
 
 			modelMap := map[string]*pkg.PackageModel{
 				"docker-ce": docker,
 			}
+			modelList := []*pkg.PackageModel{
+				docker,
+			}
 
 			It("Should show root package", func() {
 				testFile, err := os.ReadFile("internal/NoDependencies.puml")
 				Expect(err).ToNot(HaveOccurred())
 
-				pumlDiagram := puml.GenerateDiagram(config, modelMap).Contents()
+				pumlDiagram := puml.GenerateDiagram(config, modelMap, modelList).Contents()
+
+				fmt.Println("Expected")
+				fmt.Println(string(testFile))
+				fmt.Println("Actual")
+				fmt.Println(pumlDiagram)
 				//Expect(pumlDiagram).To(Equal(string(testFile)))
 				diff := cmp.Diff(pumlDiagram, string(testFile))
 				Expect(diff).To(BeEmpty())
 			})
 		})
-
 	})
 })
