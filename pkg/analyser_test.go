@@ -74,7 +74,8 @@ var _ = Describe("Analyser", func() {
 				}
 
 				modelMap := make(map[string]*pkg.PackageModel)
-				model := packager.BuildPackage("", modelMap)
+				modelList := make([]*pkg.PackageModel, 0)
+				model := packager.BuildPackage("", modelMap, modelList)
 				By("Not adding a model to the map", func() {
 					Expect(len(modelMap)).To(Equal(0))
 				})
@@ -119,7 +120,8 @@ var _ = Describe("Analyser", func() {
 				}
 
 				modelMap := make(map[string]*pkg.PackageModel)
-				model := packager.BuildPackage("", modelMap)
+				modelList := make([]*pkg.PackageModel, 0)
+				model := packager.BuildPackage("", modelMap, modelList)
 
 				By("Adding a model to the map", func() {
 					Expect(len(modelMap)).To(Equal(1))
@@ -165,7 +167,9 @@ var _ = Describe("Analyser", func() {
 				}
 
 				modelMap := make(map[string]*pkg.PackageModel)
-				_ = packager.BuildPackage("", modelMap)
+				modelList := make([]*pkg.PackageModel, 0)
+
+				_ = packager.BuildPackage("", modelMap, modelList)
 
 				By("Invoking Apt and Dpkg twice", func() {
 					Expect(apter.DownloadPackageCallCount()).To(Equal(2))
@@ -226,7 +230,9 @@ var _ = Describe("Analyser", func() {
 				}
 
 				modelMap := make(map[string]*pkg.PackageModel)
-				_ = packager.BuildPackage("", modelMap)
+				modelList := make([]*pkg.PackageModel, 0)
+
+				_ = packager.BuildPackage("", modelMap, modelList)
 
 				By("Invoking Apt and Dpkg twice", func() {
 					Expect(apter.DownloadPackageCallCount()).To(Equal(4))
@@ -274,7 +280,7 @@ var _ = Describe("Analyser", func() {
 				})
 				By("Producing a puml diagram", func() {
 
-					fmt.Println(puml.GenerateDiagram(&pkg.Config{}, modelMap))
+					fmt.Println(puml.GenerateDiagram(&pkg.Config{}, modelMap, modelList))
 				})
 				By("DpkgQuery not being invoked", func() {
 					Expect(dpkgQuery.IsInstalledCallCount()).To(Equal(0))

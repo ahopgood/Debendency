@@ -3,6 +3,9 @@
 build:
 	go build -o build/debendency main.go
 
+static-build:
+	CGO_ENABLED=0 GOOS=$(goos) go build -ldflags "-X main.version=$(VERSION)" -o build/static-main main.go
+
 test:
 	ginkgo -r -cover --skip-package integrationtests
 
