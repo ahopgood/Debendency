@@ -18,6 +18,14 @@ Usage of /tmp/go-build1711827394/b001/exe/main:
 * `./debendency -p jq -d` fetch dependencies and create an output diagram of the flow of dependencies
 * `./debendency -p jq -d -e` fetch dependencies and create an output diagram of the flow of dependencies, **excluding** dependencies already installed.
 * 
+
+## Development Setup
+On Windows you'll need to install the Ginkgo CLI:
+```
+go install github.com/onsi/ginkgo/v2/ginkgo@v2.12.0
+```
+On Linux you can make use of [mise](https://mise.jdx.dev/) via the `.mise.toml` file to install local tooling
+
 ## Building
 ```
 go build  -o build/debendency main.go

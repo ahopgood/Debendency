@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"com/alexander/debendency/pkg"
 	"fmt"
+	"log/slog"
 	"text/template"
 )
 
@@ -33,7 +34,8 @@ func GenerateDiagram(config *pkg.Config, modelMap map[string]*pkg.PackageModel, 
 	dependencies := make([]Dependency, 0)
 	packages := make([]Package, 0)
 	for _, fromModel := range modelList {
-		fmt.Printf("%s %#v\n", fromModel.Name, fromModel)
+		slog.Info(fmt.Sprintf("%s %#v\n", fromModel.Name, fromModel))
+		//fmt.Printf("%s %#v\n", fromModel.Name, fromModel)
 
 		if config.ExcludeInstalledPackages && fromModel.IsInstalled {
 
@@ -56,7 +58,7 @@ func GenerateDiagram(config *pkg.Config, modelMap map[string]*pkg.PackageModel, 
 				//fmt.Printf()
 				//Log output separately from this model
 			} else {
-				fmt.Printf("From %s to %s\n", fromModel.Name, toModel.Name)
+				slog.Info(fmt.Sprintf("From %s to %s\n", fromModel.Name, toModel.Name))
 				dependencies = append(dependencies, Dependency{
 					From:        fromModel.Name,
 					FromVersion: fromModel.Version,
@@ -67,9 +69,7 @@ func GenerateDiagram(config *pkg.Config, modelMap map[string]*pkg.PackageModel, 
 		}
 	}
 	//slices.Sort(dependencies)
-	puml := NewUml(
-		NewDigraph(dependencies),
-	)
+	puml := NewUml()
 
 	pumlModel := PumlModel{
 		Packages:     packages,
@@ -94,49 +94,16 @@ type UmlDiagram interface {
 }
 
 type Uml struct {
-	start   string
-	diagram UmlDiagram
-	end     string
-	Buffer  bytes.Buffer
+	Buffer bytes.Buffer
 }
 
-func NewUml(umlDiagram UmlDiagram) Uml {
-	return Uml{
-		start:   "@startuml\n",
-		diagram: umlDiagram,
-		end:     "@enduml",
-	}
+func NewUml() Uml {
+	return Uml{}
 }
 
 func (uml Uml) Contents() string {
 	return uml.Buffer.String()
 	//return uml.start + uml.diagram.Contents() + uml.end
-}
-
-type Digraph struct {
-	start        string
-	dependencies []Dependency
-	end          string
-}
-
-func NewDigraph(dependencies []Dependency) Digraph {
-	return Digraph{
-		start:        "digraph test {\n",
-		dependencies: dependencies,
-		end:          "}\n",
-	}
-}
-
-// Uml Diagram implementation
-func (d Digraph) Contents() string {
-	fmt.Println("Building diagraph contents")
-	output := d.start + "\n"
-	for _, value := range d.dependencies {
-		output = output + "\t" + "\"" + value.From + "\\n(" + value.FromVersion + ")\"" +
-			" -> " + "\"" + value.To + "\\n(" + value.ToVersion + ")\"\n"
-	}
-	output = output + "\n" + d.end + "\n"
-	return output
 }
 
 type PumlModel struct {
