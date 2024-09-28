@@ -5,6 +5,7 @@ import (
 	"com/alexander/debendency/pkg/puml"
 	"com/alexander/debendency/pkg/salt"
 	"flag"
+	"io/fs"
 	"os"
 
 	"fmt"
@@ -30,10 +31,18 @@ func main() {
 	cache.ClearBefore()
 
 	packageModelMap := make(map[string]*pkg.PackageModel)
-	firstPackage := pkg.NewAnalyser(conf).BuildPackage(conf.PackageName, packageModelMap)
+	packageModelList := make([]*pkg.PackageModel, 0)
+	firstPackage := pkg.NewAnalyser(conf).BuildPackage(conf.PackageName, packageModelMap, packageModelList)
 
 	if true == conf.GenerateDiagram {
-		fmt.Println(puml.GenerateDiagram(conf, packageModelMap).Contents())
+		// Need to create the file output here
+
+		pumlDiagramString := puml.GenerateDiagram(conf, packageModelMap, packageModelList).Contents()
+		fmt.Println(pumlDiagramString)
+		err := os.WriteFile(packageModelList[0].Name, []byte(pumlDiagramString), fs.ModePerm)
+		if err != nil {
+			fmt.Errorf("Issue writing puml diagram to file: %\n", packageModelList[0].Name, err)
+		}
 	}
 
 	if true == conf.GenerateSalt {
