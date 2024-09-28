@@ -10,14 +10,15 @@ Usage of /tmp/go-build1711827394/b001/exe/main:
         output directory to save installer files to
   -p string
         .deb package name to calculate dependencies for
-  -s    output dependencies as salt code
+  -v boolean
+        enable verbose output  
 
 ```
 ## Example usage
 * `./debendency -p jq` fetch dependencies
 * `./debendency -p jq -d` fetch dependencies and create an output diagram of the flow of dependencies
 * `./debendency -p jq -d -e` fetch dependencies and create an output diagram of the flow of dependencies, **excluding** dependencies already installed.
-* 
+* `./debendency -p jq` fetch dependencies and print out debugging info
 
 ## Development Setup
 On Windows you'll need to install the Ginkgo CLI:
@@ -28,12 +29,22 @@ On Linux you can make use of [mise](https://mise.jdx.dev/) via the `.mise.toml` 
 
 ## Building
 ```
+make build
+```
+or 
+```
 go build  -o build/debendency main.go
 ```
 ## Testing
+Unit tests
 ```
-ginkgo -r -v
+make test
 ```
+Integration tests (only to be run on linux):
+```
+make int
+```
+
 * Recursive and verbose
 
 ## To-Do 
@@ -42,40 +53,40 @@ ginkgo -r -v
     * version `1:4.4.10-10ubuntu4` becomes -> `libcrypt1_1%3a4.4.10-10ubuntu4_amd64.deb`
   * ~~Support cases where `Pre-Depends` exists for `dpkger.ParseDependencies`~~
   * ~~Ignore case where `Depends` has a dependency (python:any)~~
-  * Support case where file already has been downloaded and we don't create a model as we cannot parse the parameters from the download output
+  * ~~Support case where file already has been downloaded and we don't create a model as we cannot parse the parameters from the download output~~
     * dpkg -I might be needed to list these details if the download doesn't happen - don't know what the file name is
     * apt download will grab the latest available version
     * Perhaps we can use apt list to build a list of the latest version we do have if the download fails?
-* Create command line flags
+* ~~Create command line flags~~
   * Mandatory vs Optional, can we support these
-* Test command line flags
-* Add testing command line flags to only run if on linux - integration tests
-* Add integration tests
+* ~~Test command line flags~~
+* ~~Add testing command line flags to only run if on linux - integration tests~~
+* ~~Add integration tests~~
   * Move linux command non-mocked tests into the integrationtests package 
 * Logging
   * Add standard out logger
   * Add standard error logger
-  * Add verbose flag to set logging level to DEBUG
+  * ~~Add verbose flag to set logging level to DEBUG~~
 * Add puml output
   * ~~Move model parsing to puml.go~~
   * Update puml.go to add the starting dependency to the title of the graph
   * ~~Add puml tests~~
-  * Case where package has no dependencies, should we show just the package e.g. dos2unix?
-  * New line support, how to escape it in a golang string but have `\n` print in standard out?
+  * ~~Case where package has no dependencies, should we show just the package e.g. dos2unix?~~
+  * ~~New line support, how to escape it in a golang string but have `\n` print in standard out?~~
   * Support dependency version conditions on relationship  e.g. python(>2.7) dot label syntax `[label = ">= 2.7"]`
   * Update diagram to include OS version in title and filename?
   * ~~Add package versions to assist with comparisons between OS versions~~  
-  * Move to declare package and version in single place referencing just the package name in the diagram
+  * ~~Move to declare package and version in single place referencing just the package name in the diagram~~
   * Move puml diagram output to separate block to our log messages so any information about the diagram generation doesn't get mixed into the diagram itself
   * Update tests to use Google's cmp library
   * Switch puml generation to use golang templating
 * Add Makefile with goals
   * ~~Build~~
-  * Test
-  * Integration test
+  * ~~Test~~
+  * ~~Integration test~~
   * Linting?
   * Formatting
-  * Coverage
+  * ~~Coverage~~
   * Go generate for fakes
 * Supplementary Features
   * apt-get update before first download
