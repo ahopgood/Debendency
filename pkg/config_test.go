@@ -54,6 +54,15 @@ var _ = Describe("Config", func() {
 		})
 	})
 
+	When("verbose (-v)  flag set", func() {
+		It("Should set Config.Verbose", func() {
+			config, output, err := pkg.ParseFlags("", []string{"-v", "-p", "test.deb"})
+			Expect(config.Verbose).To(BeTrue())
+			Expect(output).To(BeEmpty())
+			Expect(err).To(BeNil())
+		})
+	})
+
 	When("no flags except package set", func() {
 		It("Should provide defaults", func() {
 			config, output, err := pkg.ParseFlags("", []string{"-p", "test.deb"})
@@ -63,6 +72,7 @@ var _ = Describe("Config", func() {
 				GenerateDiagram:          false,
 				InstallerLocation:        "~/.debendency/cache",
 				ExcludeInstalledPackages: false,
+				Verbose:                  false,
 			}
 			Expect(cmp.Diff(config, &expectedConfig)).To(BeEmpty())
 			Expect(output).To(BeEmpty())

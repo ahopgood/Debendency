@@ -14,6 +14,7 @@ type Config struct {
 	GenerateDiagram          bool
 	InstallerLocation        string
 	ExcludeInstalledPackages bool
+	Verbose                  bool
 }
 
 func ParseFlags(programName string, args []string) (config *Config, output string, err error) {
@@ -29,6 +30,7 @@ func ParseFlags(programName string, args []string) (config *Config, output strin
 	flags.BoolVar(&conf.GenerateDiagram, "d", false, "output dependencies as a diagram")
 	flags.StringVar(&conf.InstallerLocation, "o", "~/.debendency/cache", "cache directory to save installer files to")
 	flags.BoolVar(&conf.ExcludeInstalledPackages, "e", false, "exclude already installed packages from output")
+	flags.BoolVar(&conf.Verbose, "v", false, "enable verbose output")
 
 	err = flags.Parse(args)
 
