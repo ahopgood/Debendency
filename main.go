@@ -6,6 +6,7 @@ import (
 	"com/alexander/debendency/pkg/salt"
 	"flag"
 	"io/fs"
+	"log/slog"
 	"os"
 
 	"fmt"
@@ -17,15 +18,16 @@ func main() {
 
 	// Specifically handle the case where we are asked for the help prompt or an error returns the help prompt
 	if flagErr == flag.ErrHelp {
-		fmt.Println(flagOutput)
+		slog.Error(flagOutput)
 		os.Exit(2)
 	} else if flagErr != nil {
-		fmt.Println("got error:", flagErr)
-		fmt.Println("output:\n", flagOutput)
+		slog.Error("got error:", flagErr)
+		slog.Error(
+			"output:\n", flagOutput)
 		os.Exit(1)
 	}
 
-	fmt.Printf("%#v\n", conf)
+	slog.Debug("%#v\n", conf)
 
 	cache := pkg.Cache{}
 	cache.ClearBefore()
@@ -38,7 +40,7 @@ func main() {
 		// Need to create the file output here
 
 		pumlDiagramString := puml.GenerateDiagram(conf, packageModelMap, packageModelList).Contents()
-		fmt.Println(pumlDiagramString)
+		slog.Debug(pumlDiagramString)
 		err := os.WriteFile(packageModelList[0].Name, []byte(pumlDiagramString), fs.ModePerm)
 		if err != nil {
 			fmt.Errorf("Issue writing puml diagram to file: %\n", packageModelList[0].Name, err)

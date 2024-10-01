@@ -2,6 +2,7 @@ package pkg
 
 import (
 	"fmt"
+	"log/slog"
 	"os"
 	"strings"
 )
@@ -22,7 +23,7 @@ func (cache Cache) ClearBefore() {
 	}
 	for _, dirEntry := range dirFiles {
 		if strings.HasSuffix(dirEntry.Name(), ".deb") {
-			fmt.Printf("Found debian installer: %s, attempting to delete\n", dirEntry.Name())
+			slog.Debug("Found debian installer: %s, attempting to delete\n", dirEntry.Name())
 			err := os.Remove(dirEntry.Name())
 			if err != nil {
 				fmt.Errorf("Unable to remove debian installer file: %s\n", dirEntry.Name())
@@ -36,9 +37,9 @@ func (cache Cache) clearAfter(modelMap map[string]*PackageModel) {
 	//os.Mkdir()
 	//os.MkdirAll()
 	//os.Remove()
-	fmt.Printf("Attempting to clear cache\n")
+	slog.Debug("Attempting to clear cache\n")
 	for _, packageModel := range modelMap {
-		fmt.Printf("Removing debiand installer file: %s\n", packageModel.Filepath)
+		slog.Debug("Removing debiand installer file: %s\n", packageModel.Filepath)
 		err := os.Remove(packageModel.Filepath)
 		if err != nil {
 			fmt.Errorf("Unable to remove debian installer file: %s\n", packageModel.Filepath)

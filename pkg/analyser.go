@@ -2,7 +2,7 @@ package pkg
 
 import (
 	"com/alexander/debendency/pkg/commands"
-	"fmt"
+	"log/slog"
 	"strings"
 )
 
@@ -77,13 +77,13 @@ func (packager Analyser) BuildPackage(name string, modelMap map[string]*PackageM
 	// Iterate through dependencies
 	dependencyNames := packager.Dpkg.IdentifyDependencies(packageModel.Filepath)
 
-	fmt.Printf("Dependencies %#v\n", dependencyNames)
-	fmt.Printf("Dependencies length %d\n", len(dependencyNames))
+	slog.Debug("Dependencies %#v\n", dependencyNames)
+	slog.Debug("Dependencies length %d\n", len(dependencyNames))
 	packageModel.Dependencies = make(map[string]*PackageModel, len(dependencyNames))
 	packageModel.OrderedDependencies = make([]*PackageModel, len(dependencyNames))
 
 	for _, name := range dependencyNames {
-		fmt.Printf("Building dependency [%s] for %s \n", name, packageModel.Name)
+		slog.Debug("Building dependency [%s] for %s \n", name, packageModel.Name)
 		dep := packager.BuildPackage(name, modelMap, modelList)
 		packageModel.Dependencies[dep.Name] = dep
 		packageModel.OrderedDependencies = append(packageModel.OrderedDependencies, dep)
@@ -92,11 +92,11 @@ func (packager Analyser) BuildPackage(name string, modelMap map[string]*PackageM
 }
 
 func (packageModel *PackageModel) GetPackageFilename(name string) {
-	fmt.Printf("Package download output: %#v\n", name)
+	slog.Debug("Package download output: %#v\n", name)
 	outputArray := strings.Split(name, "\n")
-	fmt.Printf("Number of lines: %d\n", len(outputArray))
+	slog.Debug("Number of lines: %d\n", len(outputArray))
 	for index := range outputArray {
-		fmt.Println(outputArray[index])
+		slog.Debug(outputArray[index])
 	}
 
 	downloadOutputLine := strings.Split(outputArray[0], " ")
@@ -104,14 +104,14 @@ func (packageModel *PackageModel) GetPackageFilename(name string) {
 	// Get:1 http://gb.archive.ubuntu.com/ubuntu focal/universe amd64 dos2unix amd64 7.4.0-2 [374 kB]
 	// Get:1 https://repo.saltproject.io/py3/ubuntu/20.04/amd64/3004 focal/main amd64 salt-master all 3004.2+ds-1 [40.9 kB]
 	packageName := downloadOutputLine[4]
-	fmt.Printf("PackageName: %s\n", packageName)
+	slog.Debug("PackageName: %s\n", packageName)
 	arch := downloadOutputLine[5]
-	fmt.Printf("Arch: %s\n", arch)
+	slog.Debug("Arch: %s\n", arch)
 	version := downloadOutputLine[6]
-	fmt.Printf("Version: %s\n", version)
+	slog.Debug("Version: %s\n", version)
 
 	fileName := packageName + "_" + version + "_" + arch + ".deb"
-	fmt.Printf("Filename: %s\n", fileName)
+	slog.Debug("Filename: %s\n", fileName)
 	//Check file exists
 	packageModel.Filepath = fileName
 	packageModel.Name = packageName

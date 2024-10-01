@@ -35,7 +35,6 @@ func GenerateDiagram(config *pkg.Config, modelMap map[string]*pkg.PackageModel, 
 	packages := make([]Package, 0)
 	for _, fromModel := range modelList {
 		slog.Info(fmt.Sprintf("%s %#v\n", fromModel.Name, fromModel))
-		//fmt.Printf("%s %#v\n", fromModel.Name, fromModel)
 
 		if config.ExcludeInstalledPackages && fromModel.IsInstalled {
 
