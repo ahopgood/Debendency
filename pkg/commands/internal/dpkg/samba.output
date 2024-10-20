@@ -1,0 +1,39 @@
+ new Debian package, version 2.0.
+ size 1167028 bytes: control archive=8224 bytes.
+     133 bytes,     6 lines      conffiles
+    2030 bytes,    28 lines      control
+   13319 bytes,   166 lines      md5sums
+    8694 bytes,   204 lines   *  postinst             #!/bin/sh
+    2136 bytes,    63 lines   *  postrm               #!/bin/sh
+     525 bytes,     9 lines   *  preinst              #!/bin/sh
+    1400 bytes,    29 lines   *  prerm                #!/bin/sh
+     403 bytes,     7 lines      shlibs
+     120 bytes,     3 lines      triggers
+ Package: samba
+ Version: 2:4.15.13+dfsg-0ubuntu0.20.04.8
+ Architecture: amd64
+ Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+ Installed-Size: 17297
+ Pre-Depends: dpkg (>= 1.15.6~), init-system-helpers (>= 1.54~)
+ Depends: adduser, libpam-modules, libpam-runtime (>= 1.0.1-11), lsb-base (>= 4.1+Debian), procps, python3 (<< 3.9), python3-dnspython, python3-samba, samba-common (= 2:4.15.13+dfsg-0ubuntu0.20.04.8), samba-common-bin (= 2:4.15.13+dfsg-0ubuntu0.20.04.8), tdb-tools, python3 (>= 3.8~), python3:any, libbsd0 (>= 0.6.0), libc6 (>= 2.14), libgnutls30 (>= 3.6.12), libldb2 (>= 2:2.4.4-0ubuntu0.20.04.2~), libpopt0 (>= 1.14), libpython3.8 (>= 3.8.2), libtalloc2 (>= 2.3.3~), libtasn1-6 (>= 4.14), libtdb1 (>= 1.4.4~), libtevent0 (>= 0.11.0~), libwbclient0 (= 2:4.15.13+dfsg-0ubuntu0.20.04.8), samba-libs (= 2:4.15.13+dfsg-0ubuntu0.20.04.8)
+ Recommends: attr, logrotate, python3-markdown, samba-dsdb-modules, samba-vfs-modules
+ Suggests: bind9 (>= 1:9.5.1), bind9utils, ctdb, ldb-tools, ntp | chrony (>= 3.0-1), smbldap-tools, ufw, winbind
+ Enhances: bind9, ntp
+ Section: net
+ Priority: optional
+ Homepage: http://www.samba.org
+ Description: SMB/CIFS file, print, and login server for Unix
+  Samba is an implementation of the SMB/CIFS protocol for Unix systems,
+  providing support for cross-platform file and printer sharing with
+  Microsoft Windows, OS X, and other Unix systems.  Samba can also function
+  as an NT4-style domain controller, and can integrate with both NT4 domains
+  and Active Directory realms as a member server.
+  .
+  This package provides the components necessary to use Samba as a stand-alone
+  file and print server or as an NT4 or Active Directory domain controller.
+  For use in an NT4 domain or Active Directory realm, you will also need the
+  winbind package.
+  .
+  This package is not required for connecting to existing SMB/CIFS servers
+  (see smbclient) or for mounting remote filesystems (see cifs-utils).
+ Original-Maintainer: Debian Samba Maintainers <pkg-samba-maint@lists.alioth.debian.org>

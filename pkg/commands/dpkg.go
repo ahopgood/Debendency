@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"log/slog"
 	"strings"
 )
 
@@ -75,17 +76,28 @@ type Query struct {
 
 func (query Query) IsInstalled(packageName string) bool {
 	output, exitCode, err := query.Cmd.Command("dpkg-query", "-W", packageName)
-	if err != nil {
-		fmt.Printf("Encountered an unknown error on dpkg-query: %#v\n", err)
-		return false
-	}
+
 	switch exitCode {
 	case 0:
-		return true
+		blocks := strings.Fields(output)
+		if len(blocks) == 2 {
+			slog.Debug(fmt.Sprintf("Found installed version: %s for package: %s", blocks[1], blocks[0]))
+			return true
+		} else {
+			slog.Debug(fmt.Sprintf("Package: %s not installed", packageName))
+		}
+		return false
 	case 1:
+		slog.Debug(fmt.Sprintf("Package: %s not installed", packageName))
 		return false
 	default:
-		fmt.Printf("Encountered an unknown exit code on dpkg-query: %d, with output %s\n", exitCode, output)
+		if err != nil {
+			fmt.Printf("Encountered an unknown error on dpkg-query -W with status: %d and error: %#v\n", exitCode, err)
+			fmt.Printf("%s\n", output)
+			return false
+		} else {
+			fmt.Printf("Encountered an unknown exit code on dpkg-query -W with status: %d with output: %s\n", exitCode, output)
+		}
 		return false
 	}
 }
