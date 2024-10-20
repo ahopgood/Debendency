@@ -35,7 +35,7 @@ func main() {
 	cache.ClearBefore()
 
 	packageModelMap := make(map[string]*pkg.PackageModel)
-	packageModelList := make([]*pkg.PackageModel, 1)
+	packageModelList := make([]*pkg.PackageModel, 0)
 	firstPackage := pkg.NewAnalyser(conf).BuildPackage(conf.PackageName, packageModelMap, &packageModelList)
 
 	slog.Info(fmt.Sprintf("Package list %#v", packageModelList))

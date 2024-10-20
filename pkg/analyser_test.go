@@ -8,6 +8,8 @@ import (
 	"fmt"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"log"
+	"log/slog"
 	"os"
 )
 
@@ -35,6 +37,21 @@ var _ = Describe("Analyser", func() {
 				Expect(model.Name).To(Equal(""))
 				Expect(model.Version).To(Equal(""))
 				Expect(model.Filepath).To(Equal(""))
+			})
+		})
+		When("Package has a colon in its name", func() {
+			It("Should web encode the colon as %3a in the filename", func() {
+				log.SetFlags(log.LstdFlags)
+				slog.SetLogLoggerLevel(slog.LevelDebug)
+				//successMessage := "Get:1 http://gb.archive.ubuntu.com/ubuntu focal-updates/main amd64 samba amd64 2:4.15.13+dfsg-0ubuntu0.20.04.8 [1,167 kB]\nFetched 1,167 kB in 0s (3,918 kB/s)"
+				successMessage := `	Get:1 http://gb.archive.ubuntu.com/ubuntu focal-updates/main amd64 samba amd64 2:4.15.13+dfsg-0ubuntu0.20.04.8 [1,167 kB]
+				Fetched 1,167 kB in 0s (9,447 kB/s)
+				`
+				model := pkg.PackageModel{}
+				model.GetPackageFilename(successMessage)
+				Expect(model.Name).To(Equal("samba"))
+				Expect(model.Version).To(Equal("2:4.15.13+dfsg-0ubuntu0.20.04.8"))
+				Expect(model.Filepath).To(Equal("samba_2%3a4.15.13+dfsg-0ubuntu0.20.04.8_amd64.deb"))
 			})
 		})
 	})
@@ -75,7 +92,7 @@ var _ = Describe("Analyser", func() {
 
 				modelMap := make(map[string]*pkg.PackageModel)
 				modelList := make([]*pkg.PackageModel, 0)
-				model := packager.BuildPackage("", modelMap, modelList)
+				model := packager.BuildPackage("", modelMap, &modelList)
 				By("Not adding a model to the map", func() {
 					Expect(len(modelMap)).To(Equal(0))
 				})
@@ -121,7 +138,7 @@ var _ = Describe("Analyser", func() {
 
 				modelMap := make(map[string]*pkg.PackageModel)
 				modelList := make([]*pkg.PackageModel, 0)
-				model := packager.BuildPackage("", modelMap, modelList)
+				model := packager.BuildPackage("", modelMap, &modelList)
 
 				By("Adding a model to the map", func() {
 					Expect(len(modelMap)).To(Equal(1))
@@ -169,7 +186,7 @@ var _ = Describe("Analyser", func() {
 				modelMap := make(map[string]*pkg.PackageModel)
 				modelList := make([]*pkg.PackageModel, 0)
 
-				_ = packager.BuildPackage("", modelMap, modelList)
+				_ = packager.BuildPackage("", modelMap, &modelList)
 
 				By("Invoking Apt and Dpkg twice", func() {
 					Expect(apter.DownloadPackageCallCount()).To(Equal(2))
@@ -177,6 +194,9 @@ var _ = Describe("Analyser", func() {
 				})
 				By("Adding two models to the map", func() {
 					Expect(len(modelMap)).To(Equal(2))
+				})
+				By("Adding two models to the global list", func() {
+					Expect(len(modelList)).To(Equal(2))
 				})
 				By("Returning dos2unix model", func() {
 					model := modelMap["dos2unix"]
@@ -193,6 +213,11 @@ var _ = Describe("Analyser", func() {
 				By("Adding libc6 to the dos2unix dependencies map", func() {
 					model := modelMap["dos2unix"]
 					Expect(model.Dependencies["libc6"]).To(Not(BeNil()))
+				})
+				By("Adding libc6 to the dos2unix ordered dependencies list", func() {
+					model := modelMap["dos2unix"]
+					Expect(model.Dependencies["libc6"]).To(Not(BeNil()))
+					Expect(len(model.OrderedDependencies)).To(Equal(1))
 				})
 				By("DpkgQuery not being invoked", func() {
 					Expect(dpkgQuery.IsInstalledCallCount()).To(Equal(0))
@@ -232,7 +257,7 @@ var _ = Describe("Analyser", func() {
 				modelMap := make(map[string]*pkg.PackageModel)
 				modelList := make([]*pkg.PackageModel, 0)
 
-				_ = packager.BuildPackage("", modelMap, modelList)
+				_ = packager.BuildPackage("", modelMap, &modelList)
 
 				By("Invoking Apt and Dpkg twice", func() {
 					Expect(apter.DownloadPackageCallCount()).To(Equal(4))

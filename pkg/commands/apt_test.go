@@ -43,11 +43,7 @@ var _ = Describe("Apt Download", func() {
 
 		When("Package recognised", func() {
 			successMessage := "Get:1 http://gb.archive.ubuntu.com/ubuntu focal/universe amd64 dos2unix amd64 7.4.0-2 [374 kB]\nFetched 374 kB in 0s (4,447 kB/s)"
-
-			// writer := strings.Builder{}
-			// writer.Write([]byte(successMessage))
 			command := &internal.FakeCommand{}
-
 			command.CommandReturns(successMessage, 0, nil)
 
 			a := commands.Apter{
@@ -65,6 +61,26 @@ var _ = Describe("Apt Download", func() {
 				Expect(command.CommandCallCount()).To(Equal(1))
 				Expect(err).NotTo(HaveOccurred())
 				Expect(statusCode).To(Equal(0))
+				Expect(output).To(Equal(successMessage))
+			})
+		})
+
+		When("Package has a colon in its name", func() {
+			successMessage := "Get:1 http://gb.archive.ubuntu.com/ubuntu focal-updates/main amd64 samba amd64 2:4.15.13+dfsg-0ubuntu0.20.04.8 [1,167 kB]\nFetched 1,167 kB in 0s (3,918 kB/s)"
+			command := &internal.FakeCommand{}
+			command.CommandReturns(successMessage, 0, nil)
+
+			a := commands.Apter{
+				Cmd: command,
+			}
+			It("Downloads the debian package file", func() {
+				_, statusCode, err := a.DownloadPackage("samba")
+				Expect(command.CommandCallCount()).To(Equal(1))
+				Expect(err).NotTo(HaveOccurred())
+				Expect(statusCode).To(Equal(0))
+			})
+			It("Encodes colon as ampersand in filename", func() {
+				output, _, _ := a.DownloadPackage("samba")
 				Expect(output).To(Equal(successMessage))
 			})
 		})

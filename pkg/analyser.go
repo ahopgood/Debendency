@@ -2,6 +2,7 @@ package pkg
 
 import (
 	"com/alexander/debendency/pkg/commands"
+	"fmt"
 	"log/slog"
 	"strings"
 )
@@ -49,10 +50,10 @@ func NewAnalyser(config *Config) Analyser {
 func (packager Analyser) Start(name string) *PackageModel {
 	modelMap := make(map[string]*PackageModel)
 	modelList := make([]*PackageModel, 0)
-	return packager.BuildPackage(name, modelMap, modelList)
+	return packager.BuildPackage(name, modelMap, &modelList)
 }
 
-func (packager Analyser) BuildPackage(name string, modelMap map[string]*PackageModel, modelList []*PackageModel) *PackageModel {
+func (packager Analyser) BuildPackage(name string, modelMap map[string]*PackageModel, modelList *[]*PackageModel) *PackageModel {
 	model, ok := modelMap[name]
 	if ok {
 		return model
@@ -73,28 +74,29 @@ func (packager Analyser) BuildPackage(name string, modelMap map[string]*PackageM
 	// packageModel.Name
 	modelMap[packageModel.Name] = &packageModel
 	// Add packageModel to model List in order of addition (as a map won't record this)
-	modelList = append(modelList, &packageModel)
+	*modelList = append(*modelList, &packageModel)
 	// Iterate through dependencies
 	dependencyNames := packager.Dpkg.IdentifyDependencies(packageModel.Filepath)
 
-	slog.Debug("Dependencies %#v\n", dependencyNames)
-	slog.Debug("Dependencies length %d\n", len(dependencyNames))
+	slog.Debug(fmt.Sprintf("Dependencies %#v\n", dependencyNames))
+	slog.Debug(fmt.Sprintf("Dependencies length %d\n", len(dependencyNames)))
 	packageModel.Dependencies = make(map[string]*PackageModel, len(dependencyNames))
-	packageModel.OrderedDependencies = make([]*PackageModel, len(dependencyNames))
+	packageModel.OrderedDependencies = make([]*PackageModel, 0)
 
 	for _, name := range dependencyNames {
-		slog.Debug("Building dependency [%s] for %s \n", name, packageModel.Name)
+		slog.Debug(fmt.Sprintf("Building dependency [%s] for %s \n", name, packageModel.Name))
 		dep := packager.BuildPackage(name, modelMap, modelList)
 		packageModel.Dependencies[dep.Name] = dep
+
 		packageModel.OrderedDependencies = append(packageModel.OrderedDependencies, dep)
 	}
 	return &packageModel
 }
 
 func (packageModel *PackageModel) GetPackageFilename(name string) {
-	slog.Debug("Package download output: %#v\n", name)
+	slog.Debug(fmt.Sprintf("Package download output: %#v\n", name))
 	outputArray := strings.Split(name, "\n")
-	slog.Debug("Number of lines: %d\n", len(outputArray))
+	slog.Debug(fmt.Sprintf("Number of lines: %d\n", len(outputArray)))
 	for index := range outputArray {
 		slog.Debug(outputArray[index])
 	}
@@ -104,14 +106,15 @@ func (packageModel *PackageModel) GetPackageFilename(name string) {
 	// Get:1 http://gb.archive.ubuntu.com/ubuntu focal/universe amd64 dos2unix amd64 7.4.0-2 [374 kB]
 	// Get:1 https://repo.saltproject.io/py3/ubuntu/20.04/amd64/3004 focal/main amd64 salt-master all 3004.2+ds-1 [40.9 kB]
 	packageName := downloadOutputLine[4]
-	slog.Debug("PackageName: %s\n", packageName)
+	slog.Debug(fmt.Sprintf("PackageName: %s\n", packageName))
 	arch := downloadOutputLine[5]
-	slog.Debug("Arch: %s\n", arch)
+	slog.Debug(fmt.Sprintf("Arch: %s\n", arch))
 	version := downloadOutputLine[6]
-	slog.Debug("Version: %s\n", version)
+	slog.Debug(fmt.Sprintf("Version: %s\n", version))
 
 	fileName := packageName + "_" + version + "_" + arch + ".deb"
-	slog.Debug("Filename: %s\n", fileName)
+	fileName = strings.ReplaceAll(fileName, ":", "%3a")
+	slog.Debug(fmt.Sprintf("Filename: %s\n", fileName))
 	//Check file exists
 	packageModel.Filepath = fileName
 	packageModel.Name = packageName
