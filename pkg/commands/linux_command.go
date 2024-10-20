@@ -2,6 +2,7 @@ package commands
 
 import (
 	"errors"
+	"fmt"
 	"log/slog"
 	"os/exec"
 	"strings"
@@ -23,21 +24,21 @@ func (lc LinuxCommand) Command(programName string, args ...string) (string, int,
 	// command.Stdout = os.Stdout
 	// command.Stderr = os.Stderr
 	command.Stdout = &output
-	// command.Stderr = &output
+	//command.Stderr = &output
 
 	err := command.Start()
 
 	var exit *exec.ExitError
 	if errors.As(err, &exit) {
 		output.Write(exit.Stderr)
-		slog.Error("Standard Error: %s\n", output.String())
+		slog.Error(fmt.Sprintf("Standard Error: %s\n", output.String()))
 		return output.String(), exit.ProcessState.ExitCode(), err
 	}
 
 	err = command.Wait()
 	if errors.As(err, &exit) {
 		output.Write(exit.Stderr)
-		slog.Error("Standard Error from Wait: %s\n", output.String())
+		slog.Error(fmt.Sprintf("Standard Error (exit code %d) from Wait: %s\n", exit.ExitCode(), output.String()))
 		return output.String(), exit.ProcessState.ExitCode(), err
 	}
 

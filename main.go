@@ -16,6 +16,8 @@ func main() {
 
 	conf, flagOutput, flagErr := pkg.ParseFlags(os.Args[0], os.Args[1:])
 
+	pkg.ConfigureLogger(*conf)
+
 	// Specifically handle the case where we are asked for the help prompt or an error returns the help prompt
 	if flagErr == flag.ErrHelp {
 		slog.Error(flagOutput)
@@ -33,17 +35,20 @@ func main() {
 	cache.ClearBefore()
 
 	packageModelMap := make(map[string]*pkg.PackageModel)
-	packageModelList := make([]*pkg.PackageModel, 0)
-	firstPackage := pkg.NewAnalyser(conf).BuildPackage(conf.PackageName, packageModelMap, packageModelList)
+	packageModelList := make([]*pkg.PackageModel, 1)
+	firstPackage := pkg.NewAnalyser(conf).BuildPackage(conf.PackageName, packageModelMap, &packageModelList)
 
+	slog.Info(fmt.Sprintf("Package list %#v", packageModelList))
+	slog.Info(fmt.Sprintf("Package map %#v", packageModelMap))
 	if true == conf.GenerateDiagram {
 		// Need to create the file output here
 
 		pumlDiagramString := puml.GenerateDiagram(conf, packageModelMap, packageModelList).Contents()
+		filename := fmt.Sprintf("%s.puml", conf.PackageName)
 		slog.Debug(pumlDiagramString)
-		err := os.WriteFile(packageModelList[0].Name, []byte(pumlDiagramString), fs.ModePerm)
+		err := os.WriteFile(filename, []byte(pumlDiagramString), fs.ModePerm)
 		if err != nil {
-			fmt.Errorf("Issue writing puml diagram to file: %\n", packageModelList[0].Name, err)
+			slog.Error("Main error:", fmt.Errorf("Issue writing puml diagram to file: %s\n%#v\n", filename, err))
 		}
 	}
 
