@@ -5,10 +5,12 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"os"
 	"strings"
 )
 
 type Config struct {
+	ProgramName              string
 	PackageName              string
 	GenerateSalt             bool
 	GenerateDiagram          bool
@@ -25,14 +27,19 @@ func ParseFlags(programName string, args []string) (config *Config, output strin
 	flags.SetOutput(&buf)
 
 	var conf Config
+
+	cache, err := os.UserCacheDir()
+
 	flags.StringVar(&conf.PackageName, "p", "", ".deb package name to calculate dependencies for")
 	flags.BoolVar(&conf.GenerateSalt, "s", false, "output dependencies as salt code")
 	flags.BoolVar(&conf.GenerateDiagram, "d", false, "output dependencies as a diagram")
-	flags.StringVar(&conf.InstallerLocation, "o", "~/.debendency/cache", "cache directory to save installer files to")
+	flags.StringVar(&conf.InstallerLocation, "o", cache, "cache directory to save installer files to")
 	flags.BoolVar(&conf.ExcludeInstalledPackages, "e", false, "exclude already installed packages from output")
 	flags.BoolVar(&conf.Verbose, "v", false, "enable verbose output")
 
 	err = flags.Parse(args)
+
+	conf.ProgramName = programName
 
 	if err != nil {
 		return nil, buf.String(), err

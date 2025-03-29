@@ -11,25 +11,45 @@ type Cache struct {
 	directory string
 }
 
-func (cache Cache) ClearBefore() {
-	os.UserCacheDir()
+const DEBENDENCY = "debendency"
+
+func NewCache(config Config) Cache {
+	dir := config.InstallerLocation + "/" + DEBENDENCY
+	return Cache{directory: dir}
+}
+
+func (cache Cache) ClearBefore() (string, error) {
+	startingDir, err := os.Getwd()
+
+	// check dir exists
+	err = os.MkdirAll(cache.directory, 0755)
+	if err != nil {
+		return "", fmt.Errorf("Pre-Cache issue: unable to create cache directory: %s", cache.directory)
+	}
+	// change dir
+	err = os.Chdir(cache.directory)
+	if err != nil {
+		return "", fmt.Errorf("Pre-Cache issue: unable to switch to cache directory: %s", cache.directory)
+	}
+
 	workingDir, err := os.Getwd()
 	if err != nil {
-		slog.Error("Pre-Cache issue", fmt.Errorf("Unable locate current working directory for cache clearance\n"))
+		return "", fmt.Errorf("Pre-Cache issue: unable locate current working directory for cache clearance")
 	}
 	dirFiles, err := os.ReadDir(workingDir)
 	if err != nil {
-		slog.Error("Pre-Cache issue", fmt.Errorf("Unable to clear cache of .deb files in current directory\n"))
+		return "", fmt.Errorf("Pre-Cache issue: unable to clear cache of .deb files in current directory")
 	}
 	for _, dirEntry := range dirFiles {
 		if strings.HasSuffix(dirEntry.Name(), ".deb") {
 			slog.Debug(fmt.Sprintf("Found debian installer: %s, attempting to delete\n", dirEntry.Name()))
 			err := os.Remove(dirEntry.Name())
 			if err != nil {
-				slog.Error("Pre-Cache issue", fmt.Errorf("Unable to remove debian installer file: %s\n", dirEntry.Name()))
+				slog.Error(fmt.Sprintf("Pre-Cache issue: Unable to remove debian installer file: %s", dirEntry.Name()))
 			}
 		}
 	}
+	return startingDir, nil
 }
 func (cache Cache) clearAfter(modelMap map[string]*PackageModel) {
 	//os.Chdir()
@@ -42,7 +62,7 @@ func (cache Cache) clearAfter(modelMap map[string]*PackageModel) {
 		slog.Debug(fmt.Sprintf("Removing debian installer file: %s\n", packageModel.Filepath))
 		err := os.Remove(packageModel.Filepath)
 		if err != nil {
-			slog.Error("Post-Cache issue", fmt.Errorf("Unable to remove debian installer file: %s\n", packageModel.Filepath))
+			slog.Error(fmt.Sprintf("Post-Cache issue: unable to remove debian installer file: %s\n", packageModel.Filepath))
 		}
 	}
 }

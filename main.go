@@ -16,27 +16,40 @@ func main() {
 
 	conf, flagOutput, flagErr := pkg.ParseFlags(os.Args[0], os.Args[1:])
 
-	pkg.ConfigureLogger(*conf)
-
 	// Specifically handle the case where we are asked for the help prompt or an error returns the help prompt
 	if flagErr == flag.ErrHelp {
-		slog.Error(flagOutput)
+		fmt.Printf("%s\n", flagOutput)
 		os.Exit(2)
 	} else if flagErr != nil {
-		slog.Error("got error:", flagErr)
-		slog.Error(
-			"output:\n", flagOutput)
+		fmt.Printf("got error:%#v", flagErr)
+		fmt.Printf(
+			"output:%s\n", flagOutput)
 		os.Exit(1)
 	}
 
+	fmt.Printf("%#v\n", conf)
+	pkg.ConfigureLogger(*conf)
+
 	slog.Debug("%#v\n", conf)
 
-	cache := pkg.Cache{}
-	cache.ClearBefore()
+	cache := pkg.NewCache(*conf)
+	// enter cache dir and clear it
+	startingDir, err := cache.ClearBefore()
+	if err != nil {
+		os.Exit(1)
+	}
 
 	packageModelMap := make(map[string]*pkg.PackageModel)
 	packageModelList := make([]*pkg.PackageModel, 0)
+	// download packages and build map
 	firstPackage := pkg.NewAnalyser(conf).BuildPackage(conf.PackageName, packageModelMap, &packageModelList)
+
+	// move out of cache dir back to calling directory
+	err = os.Chdir(startingDir)
+	if err != nil {
+		slog.Error("Main error:", fmt.Errorf("Failed to change back to calling dir: %s\n%#v\n", startingDir, err))
+		os.Exit(1)
+	}
 
 	slog.Info(fmt.Sprintf("Package list %#v", packageModelList))
 	slog.Info(fmt.Sprintf("Package map %#v", packageModelMap))
