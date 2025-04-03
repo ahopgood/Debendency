@@ -69,6 +69,9 @@ var _ = Describe("Analyser", func() {
 	libc6 := "Get:1 http://gb.archive.ubuntu.com/ubuntu focal-updates/main amd64 libc6 amd64 2.31-0ubuntu9.15 [2,723 kB]\nFetched 2,723 kB in 0s (20.9 MB/s)\n"
 	libc6File := "libc6_2.31-0ubuntu9.15_amd64.deb"
 
+	libgsoap := "Get:1 http://gb.archive.ubuntu.com/ubuntu jammy/universe amd64 libgsoap-2.8.117 amd64 2.8.117-2build1 [269 kB]\nFetched 269 kB in 0s (2,756 kB/s)\n"
+	libgsoapFile := "libgsoap-2.8.117_2.8.117-2build1_amd64.deb"
+
 	When("BuildPackage", func() {
 		When("Package does not exist", func() {
 			It("Produces nothing", func() {
@@ -306,6 +309,51 @@ var _ = Describe("Analyser", func() {
 				By("Producing a puml diagram", func() {
 
 					fmt.Println(puml.GenerateDiagram(&pkg.Config{}, modelMap, modelList))
+				})
+				By("DpkgQuery not being invoked", func() {
+					Expect(dpkgQuery.IsInstalledCallCount()).To(Equal(0))
+				})
+			})
+		})
+
+		When("Package is libgsoap", func() {
+			It("Produces a single model", func() {
+				// Successfully download the debendency
+				apter := &internal.FakeApt{}
+				apter.DownloadPackageReturns(libgsoap, 0, nil)
+
+				// No dependencies found via dpkg -I
+				dpkger := &internal.FakeDpkg{}
+				dpkger.IdentifyDependenciesReturns([]string{})
+
+				dpkgQuery := &internal.FakeDpkgQuery{}
+
+				config := &pkg.Config{
+					ExcludeInstalledPackages: false,
+				}
+
+				packager := pkg.Analyser{
+					Apt:    apter,
+					Dpkg:   dpkger,
+					Config: config,
+					Query:  dpkgQuery,
+				}
+
+				modelMap := make(map[string]*pkg.PackageModel)
+				modelList := make([]*pkg.PackageModel, 0)
+				model := packager.BuildPackage("", modelMap, &modelList)
+
+				By("Adding a model to the map", func() {
+					Expect(len(modelMap)).To(Equal(1))
+				})
+				By("Returning a populated model", func() {
+					Expect(model.Name).To(Equal("libgsoap-2.8.117"))
+					Expect(model.Version).To(Equal("2.8.117-2build1"))
+					Expect(model.Filepath).To(Equal(libgsoapFile))
+				})
+				By("Invoking Apt and Dpkg only once", func() {
+					Expect(apter.DownloadPackageCallCount()).To(Equal(1))
+					Expect(dpkger.IdentifyDependenciesCallCount()).To(Equal(1))
 				})
 				By("DpkgQuery not being invoked", func() {
 					Expect(dpkgQuery.IsInstalledCallCount()).To(Equal(0))
