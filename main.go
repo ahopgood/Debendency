@@ -42,7 +42,7 @@ func main() {
 	packageModelMap := make(map[string]*pkg.PackageModel)
 	packageModelList := make([]*pkg.PackageModel, 0)
 	// download packages and build map
-	firstPackage := pkg.NewAnalyser(conf).BuildPackage(conf.PackageName, packageModelMap, &packageModelList)
+	pkg.NewAnalyser(conf).BuildPackage(conf.PackageName, packageModelMap, &packageModelList)
 
 	// move out of cache dir back to calling directory
 	err = os.Chdir(startingDir)
@@ -65,7 +65,11 @@ func main() {
 		}
 	}
 
+	// Pass in an io.Writer, in the case of os.Stdout for standard out
 	if true == conf.GenerateSalt {
-		salt.ToSaltDefinition(firstPackage)
+		// Root package
+		salt.ToSaltDefinition(os.Stdout, packageModelList[0])
+		// Print off dependencies
+		salt.ToSaltDefinitions(os.Stdout, packageModelList[1:])
 	}
 }

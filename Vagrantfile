@@ -77,29 +77,18 @@ Vagrant.configure("2") do |config|
   # documentation for more information about their specific syntax and use.
 #   config.vm.boot_timeout = 400
     config.vm.provision "shell", privileged: false, inline: <<-SHELL
-      echo "vagrant" | su --login vagrant
+
+      echo "vagrant" | /usr/bin/su --login vagrant
+      whoami 
       sudo chsh -s /bin/bash vagrant
+  
+      sudo apt-get update
       curl https://mise.run | sh
-      ~/.local/bin/mise --version
-      echo 'eval "$(~/.local/bin/mise activate bash)"' >> ~/.bashrc
-
-      ~/.local/bin/mise plugin install ginkgo -y
-
-      cd /vagrant
+      echo "PATH=$PATH:$HOME/.local/share/mise/bin" | sudo tee --append /etc/environment
+      echo "PATH=$PATH:$HOME/.local/share/mise/shims" | sudo tee --append /etc/environment
+      
       ~/.local/bin/mise settings set experimental true
-      ~/.local/bin/mise install
-
-      # Ginkgo needs to be installed for the ginkgo extension to work
-#       export TEMP_GO="/home/vagrant/.local/share/mise/installs/go/1.20/bin/"
-
-#       ${TEMP_GO}go install github.com/onsi/ginkgo/v2/ginkgo@v2.12.0
-      # Should install to the below location but I cannot invoke it
-      #/home/vagrant/.local/share/mise/installs/go/1.20/bin/ginkgo
-
-#       ${TEMP_GO}go install github.com/maxbrunsfeld/counterfeiter/v6@v6.7.0
-#         ~/.local/bin/mise use go:github.com/maxbrunsfeld/counterfeiter/v6@v6.7.0
-
-#       ls -l /home/vagrant/go/bin/
-#       whoami
+      
+      cd /vagrant/ && ~/.local/bin/mise trust mise.toml && ~/.local/bin/mise install 
     SHELL
 end
