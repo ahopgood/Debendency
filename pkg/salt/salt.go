@@ -20,7 +20,16 @@ func DependencyToTemplate(model *pkg.PackageModel, template string) {
 
 }
 
-func ToSaltDefinition(writer io.Writer, model *pkg.PackageModel) {
+func RootPackageToSaltDefinition(writer io.Writer, model *pkg.PackageModel, conf *pkg.Config) {
+
+	// Loop through and select only packages that aren't installed if the -e flag has been passed
+	var dependenciesNotInstalled = make([]*pkg.PackageModel, 0)
+	for _, dependency := range model.OrderedDependencies {
+		if conf.ExcludeInstalledPackages && !dependency.IsInstalled {
+			dependenciesNotInstalled = append(dependenciesNotInstalled, dependency)
+		}
+	}
+	model.OrderedDependencies = dependenciesNotInstalled
 
 	saltTemplate := `
 {{.Name}}:
@@ -29,9 +38,9 @@ func ToSaltDefinition(writer io.Writer, model *pkg.PackageModel) {
     - sources:
       - {{.Name}}: "salt://{{.Filepath}}"
     - refresh: False
-      {{- if .Dependencies}}
+      {{- if .OrderedDependencies}}
     - require:{{end}}
-      {{- range .Dependencies}}
+      {{- range .OrderedDependencies}}
       - pkg: {{.Name}}{{end}}
   {% else %}
     - pkgs:
@@ -55,7 +64,22 @@ func ToSaltDefinition(writer io.Writer, model *pkg.PackageModel) {
 	}
 }
 
-func ToSaltDefinitions(writer io.Writer, modelList []*pkg.PackageModel) {
+func DependenciesToSaltDefinitions(writer io.Writer, modelList []*pkg.PackageModel, conf *pkg.Config) {
+
+	// Loop through and select only packages that aren't installed if the -e flag has been passed
+	var packageModelsNotInstalled = make([]*pkg.PackageModel, 0)
+	for _, packageModel := range modelList {
+		if conf.ExcludeInstalledPackages && !packageModel.IsInstalled {
+			var dependenciesNotInstalled = make([]*pkg.PackageModel, 0)
+			for _, dependency := range packageModel.OrderedDependencies {
+				if !dependency.IsInstalled {
+					dependenciesNotInstalled = append(dependenciesNotInstalled, dependency)
+				}
+			}
+			packageModel.OrderedDependencies = dependenciesNotInstalled
+			packageModelsNotInstalled = append(packageModelsNotInstalled, packageModel)
+		}
+	}
 
 	saltTemplate := `
 {{- if . }}
@@ -66,9 +90,9 @@ func ToSaltDefinitions(writer io.Writer, modelList []*pkg.PackageModel) {
     - sources:
       - {{.Name}}: "salt://{{.Filepath}}"
     - refresh: False
-      {{- if .Dependencies}}
+      {{- if .OrderedDependencies}}
     - require:{{end}}
-      {{- range .Dependencies}}
+      {{- range .OrderedDependencies}}
       - pkg: {{.Name}}{{end}}
 {{end}}
 {% endif %}{{end}}
@@ -83,7 +107,7 @@ func ToSaltDefinitions(writer io.Writer, modelList []*pkg.PackageModel) {
 	if err != nil {
 		panic(err)
 	}
-	err = tmpl.Execute(writer, modelList)
+	err = tmpl.Execute(writer, packageModelsNotInstalled)
 	if err != nil {
 		panic(err)
 	}

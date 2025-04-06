@@ -68,8 +68,11 @@ func main() {
 	// Pass in an io.Writer, in the case of os.Stdout for standard out
 	if true == conf.GenerateSalt {
 		// Root package
-		salt.ToSaltDefinition(os.Stdout, packageModelList[0])
+		salt.RootPackageToSaltDefinition(os.Stdout, packageModelList[0], conf)
+
 		// Print off dependencies
-		salt.ToSaltDefinitions(os.Stdout, packageModelList[1:])
+		if len(packageModelList) > 1 {
+			salt.DependenciesToSaltDefinitions(os.Stdout, packageModelList[1:], conf)
+		}
 	}
 }
