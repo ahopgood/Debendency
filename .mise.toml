@@ -1,5 +1,5 @@
 [tools]
-"go:github.com/onsi/ginkgo/v2/ginkgo" = "2.12.0"
+"go:github.com/onsi/ginkgo/v2/ginkgo" = "2.19.0"
 "go:github.com/maxbrunsfeld/counterfeiter/v6" = "6.9.0"
 "go:github.com/golangci/golangci-lint/cmd/golangci-lint" = "v1.52.2"
 go = "1.22"
