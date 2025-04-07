@@ -90,5 +90,8 @@ Vagrant.configure("2") do |config|
       ~/.local/bin/mise settings set experimental true
       
       cd /vagrant/ && ~/.local/bin/mise trust mise.toml && ~/.local/bin/mise install 
+
+      sudo apt-get install dos2unix
+      dos2unix pkg/puml/internal/*.puml
     SHELL
 end

@@ -49,7 +49,7 @@ var _ = Describe("ConfigureLogger", func() {
 			slog.Info("test message")
 			fmt.Println(buf.String())
 			actualCodeLocation := strings.Fields(buf.String())[2]
-			Expect(actualCodeLocation).To(MatchRegexp("/Debendency/pkg/logger_test\\.go:[[:digit:]]+:"))
+			Expect(actualCodeLocation).To(MatchRegexp("/pkg/logger_test\\.go:[[:digit:]]+:"))
 		})
 
 		It("should not be structured and in json", func() {
