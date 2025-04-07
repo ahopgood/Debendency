@@ -5,6 +5,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"os"
 )
 
 var _ = Describe("Config", func() {
@@ -66,11 +67,14 @@ var _ = Describe("Config", func() {
 	When("no flags except package set", func() {
 		It("Should provide defaults", func() {
 			config, output, err := pkg.ParseFlags("", []string{"-p", "test.deb"})
+
+			cache, err := os.UserCacheDir()
+			Expect(err).ToNot(HaveOccurred())
 			expectedConfig := pkg.Config{
 				PackageName:              "test.deb",
 				GenerateSalt:             false,
 				GenerateDiagram:          false,
-				InstallerLocation:        "~/.debendency/cache",
+				InstallerLocation:        cache,
 				ExcludeInstalledPackages: false,
 				Verbose:                  false,
 			}
