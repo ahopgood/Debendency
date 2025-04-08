@@ -95,28 +95,33 @@ func (packager Analyser) BuildPackage(name string, modelMap map[string]*PackageM
 
 func (packageModel *PackageModel) GetPackageFilename(name string) {
 	slog.Debug(fmt.Sprintf("Package download output: %#v\n", name))
-	outputArray := strings.Split(name, "\n")
-	slog.Debug(fmt.Sprintf("Number of lines: %d\n", len(outputArray)))
-	for index := range outputArray {
-		slog.Debug(outputArray[index])
+
+	//fetchLine := strings.Split(name, "Get:1")[1]
+	// We've now found the fetch line, break it down
+	if strings.Contains(name, "Get:1") {
+		outputArray := strings.Split(name, "Get:1")
+		slog.Debug(fmt.Sprintf("Number of lines: %d\n", len(outputArray)))
+		for index := range outputArray {
+			slog.Debug(outputArray[index])
+		}
+
+		downloadOutputLine := strings.Split(outputArray[1], " ")
+		// Length should be 8
+		// Get:1 http://gb.archive.ubuntu.com/ubuntu focal/universe amd64 dos2unix amd64 7.4.0-2 [374 kB]
+		// Get:1 https://repo.saltproject.io/py3/ubuntu/20.04/amd64/3004 focal/main amd64 salt-master all 3004.2+ds-1 [40.9 kB]
+		packageName := downloadOutputLine[4]
+		slog.Debug(fmt.Sprintf("PackageName: %s\n", packageName))
+		arch := downloadOutputLine[5]
+		slog.Debug(fmt.Sprintf("Arch: %s\n", arch))
+		version := downloadOutputLine[6]
+		slog.Debug(fmt.Sprintf("Version: %s\n", version))
+
+		fileName := packageName + "_" + version + "_" + arch + ".deb"
+		fileName = strings.ReplaceAll(fileName, ":", "%3a")
+		slog.Debug(fmt.Sprintf("Filename: %s\n", fileName))
+		//Check file exists
+		packageModel.Filepath = fileName
+		packageModel.Name = packageName
+		packageModel.Version = version
 	}
-
-	downloadOutputLine := strings.Split(outputArray[0], " ")
-	// Length should be 8
-	// Get:1 http://gb.archive.ubuntu.com/ubuntu focal/universe amd64 dos2unix amd64 7.4.0-2 [374 kB]
-	// Get:1 https://repo.saltproject.io/py3/ubuntu/20.04/amd64/3004 focal/main amd64 salt-master all 3004.2+ds-1 [40.9 kB]
-	packageName := downloadOutputLine[4]
-	slog.Debug(fmt.Sprintf("PackageName: %s\n", packageName))
-	arch := downloadOutputLine[5]
-	slog.Debug(fmt.Sprintf("Arch: %s\n", arch))
-	version := downloadOutputLine[6]
-	slog.Debug(fmt.Sprintf("Version: %s\n", version))
-
-	fileName := packageName + "_" + version + "_" + arch + ".deb"
-	fileName = strings.ReplaceAll(fileName, ":", "%3a")
-	slog.Debug(fmt.Sprintf("Filename: %s\n", fileName))
-	//Check file exists
-	packageModel.Filepath = fileName
-	packageModel.Name = packageName
-	packageModel.Version = version
 }

@@ -10,6 +10,7 @@ import (
 
 var _ = Describe("Commands", func() {
 	// Possibly create a table test here using: command, standard out, standard error, exit status?
+
 	When("Command fails", func() {
 
 		cmd := commands.LinuxCommand{}
@@ -20,6 +21,7 @@ var _ = Describe("Commands", func() {
 			// echo $?
 			// 100
 
+			// Ubuntu 20.04 apt version 2.0.9
 			var errorMessage = "\nWARNING: apt does not have a stable CLI interface. Use with caution in scripts.\n\nE: Unable to locate package test\n"
 
 			output, statusCode, err := cmd.Command("apt", "download", "test")

@@ -22,9 +22,9 @@ func (lc LinuxCommand) Command(programName string, args ...string) (string, int,
 	var output strings.Builder
 	command := exec.Command(programName, args...)
 	// command.Stdout = os.Stdout
-	// command.Stderr = os.Stderr
+	//command.Stderr = os.Stderr
 	command.Stdout = &output
-	//command.Stderr = &output
+	command.Stderr = &output
 
 	err := command.Start()
 
@@ -36,6 +36,7 @@ func (lc LinuxCommand) Command(programName string, args ...string) (string, int,
 	}
 
 	err = command.Wait()
+	slog.Error(fmt.Sprintf("Wait error: %#v", err))
 	if errors.As(err, &exit) {
 		output.Write(exit.Stderr)
 		slog.Error(fmt.Sprintf("Standard Error (exit code %d) from Wait: %s\n", exit.ExitCode(), output.String()))

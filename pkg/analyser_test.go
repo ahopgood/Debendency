@@ -15,7 +15,6 @@ import (
 
 var _ = Describe("Analyser", func() {
 	When("GetPackageFilename", func() {
-
 		When("Downloaded Successfully", func() {
 			It("Should construct file name correctly", func() {
 				successMessage := "Get:1 http://gb.archive.ubuntu.com/ubuntu focal/universe amd64 dos2unix amd64 7.4.0-2 [374 kB]\nFetched 374 kB in 0s (4,447 kB/s)"
@@ -29,7 +28,6 @@ var _ = Describe("Analyser", func() {
 		})
 		When("Already downloaded", func() {
 			It("Should construct file name correctly", func() {
-				Skip("Not yet implemented")
 				successMessage := ""
 
 				model := pkg.PackageModel{}
@@ -49,6 +47,19 @@ var _ = Describe("Analyser", func() {
 				`
 				model := pkg.PackageModel{}
 				model.GetPackageFilename(successMessage)
+				Expect(model.Name).To(Equal("samba"))
+				Expect(model.Version).To(Equal("2:4.15.13+dfsg-0ubuntu0.20.04.8"))
+				Expect(model.Filepath).To(Equal("samba_2%3a4.15.13+dfsg-0ubuntu0.20.04.8_amd64.deb"))
+			})
+		})
+		When("apt provides a warning", func() {
+			It("Should ignore the warning and find the package name", func() {
+				var warningMessage = "\nWARNING: apt does not have a stable CLI interface. Use with caution in scripts.\n\nGet:1 http://gb.archive.ubuntu.com/ubuntu focal-updates/main amd64 samba amd64 2:4.15.13+dfsg-0ubuntu0.20.04.8 [1,167 kB]\nFetched 1,167 kB in 0s (12.7 MB/s)\n"
+
+				log.SetFlags(log.LstdFlags)
+				slog.SetLogLoggerLevel(slog.LevelDebug)
+				model := pkg.PackageModel{}
+				model.GetPackageFilename(warningMessage)
 				Expect(model.Name).To(Equal("samba"))
 				Expect(model.Version).To(Equal("2:4.15.13+dfsg-0ubuntu0.20.04.8"))
 				Expect(model.Filepath).To(Equal("samba_2%3a4.15.13+dfsg-0ubuntu0.20.04.8_amd64.deb"))

@@ -7,11 +7,12 @@ static-build:
 	CGO_ENABLED=0 GOOS=$(goos) go build -ldflags "-X main.version=$(VERSION)" -o build/static-main main.go
 
 test:
-	ginkgo -r -cover --skip-package integrationtests
+	ginkgo -r -cover --skip-package integrationtests -coverprofile=unit.coverprofile
 
 # Integration tests
 int:
-	ginkgo -v -r --skip-package pkg
+	ginkgo -v -r -cover --skip-package pkg -coverprofile=int.coverprofile -coverpkg ./pkg/commands
+#	ginkgo -v -r -cover --skip-package pkg -coverprofile=coverprofile.int -coverpkg ./pkg/commands
 
 fmt:
 	gofmt -s -w .
@@ -25,14 +26,15 @@ generate:
 	#go generate pkg
 # needs to be in pkg
 
-coverage-html: coverage-clean test
-	go tool cover -html=coverprofile.out -o coverage.html
+coverage-html:  coverage-clean test int
+	gover . coverprofile.aggregate
+	go tool cover -html=coverprofile.aggregate -o coverage.html
 
-coverage-cli: coverage-clean test
+coverage-cli: coverage-clean test int
 	go tool cover -func=coverprofile.out
 
 coverage-clean:
-	- rm 'coverprofile.out'
+	- rm 'coverprofile.aggregate' 'coverprofile.unit' 'coverprofile.int'
 
 ## Show this help message.
 help:
